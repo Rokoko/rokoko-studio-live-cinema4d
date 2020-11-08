@@ -5,7 +5,7 @@ currentOS = c4d.GeGetCurrentOS()
 if currentOS == c4d.OPERATINGSYSTEM_WIN:
     import packages.win.lz4.frame as lz4f
 elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-    import packages.mac.lz4.frame
+    import packages.mac.lz4.frame as lz4f
 from rokoko_ids import *
 from rokoko_rig_tables import *
 
