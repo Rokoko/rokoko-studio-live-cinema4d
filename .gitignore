@@ -3,7 +3,6 @@ __pycache__
 *.pyc
 .cache
 tmp
-*.c4d
 .coverage
 resources/ignore_version.txt
 resources/no_auto_ver_check.txt
