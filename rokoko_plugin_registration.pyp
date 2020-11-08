@@ -1,29 +1,28 @@
 import sys, os, importlib
 import c4d
-g_lz4Exists = importlib.util.find_spec('lz4') is not None
-if g_lz4Exists:
-    DEVELOPMENT = True # Users should rather have this set to False
-    basedir = __file__[:__file__.rfind(os.sep)]
-    sys.path.insert(0, basedir)
-    if DEVELOPMENT == True:
-        # not nice, but during development the reload is needed for Reload Python Plugins to work properly (and use changed sources)
-        for module in sys.modules.values():
-            end = len('rokoko_')
-            if len(module.__name__) < end:
-                end = len(module.__name__)
-            if module.__name__[:end] == 'rokoko_':
-                importlib.reload(module)
-    from rokoko_ids import *
-    from rokoko_rig_tables import *
-    from rokoko_utils import *
-    from rokoko_listener import *
-    from rokoko_dialog_about import *
-    from rokoko_dialog_save_recording import *
-    from rokoko_dialog_manager import *
-    from rokoko_message_data import *
-    from rokoko_commands import *
-    from rokoko_tag import *
-    from rokoko_prefs import *
+
+DEVELOPMENT = True # Users should rather have this set to False
+basedir = __file__[:__file__.rfind(os.sep)]
+sys.path.insert(0, basedir)
+if DEVELOPMENT == True:
+    # not nice, but during development the reload is needed for Reload Python Plugins to work properly (and use changed sources)
+    for module in sys.modules.values():
+        end = len('rokoko_')
+        if len(module.__name__) < end:
+            end = len(module.__name__)
+        if module.__name__[:end] == 'rokoko_':
+            importlib.reload(module)
+from rokoko_ids import *
+from rokoko_rig_tables import *
+from rokoko_utils import *
+from rokoko_listener import *
+from rokoko_dialog_about import *
+from rokoko_dialog_save_recording import *
+from rokoko_dialog_manager import *
+from rokoko_message_data import *
+from rokoko_commands import *
+from rokoko_tag import *
+from rokoko_prefs import *
 
 g_studioTPose = {}
 def LoadStudioTPose():
@@ -155,5 +154,5 @@ def RegisterRokokoStudioLive():
         print('ERROR: Rokoko Studio Live ({}) failed to register PrefData.'.format(PLUGIN_VERSION))
 
 
-if __name__ == "__main__" and g_lz4Exists:
+if __name__ == "__main__":
     RegisterRokokoStudioLive()

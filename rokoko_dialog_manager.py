@@ -1,7 +1,11 @@
 import os, shutil, json
 import urllib.request
-import lz4.frame
 import c4d
+currentOS = c4d.GeGetCurrentOS()
+if currentOS == c4d.OPERATINGSYSTEM_WIN:
+    import packages.win.lz4.frame as lz4f
+elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+    import packages.mac.lz4.frame as lz4f
 from rokoko_ids import *
 from rokoko_utils import *
 from rokoko_listener import *
@@ -1009,7 +1013,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             f.close()
         if dataLZ4 is None:
             return None
-        dataStudio = lz4.frame.decompress(dataLZ4, return_bytearray=True, return_bytes_read=False)
+        dataStudio = lz4f.decompress(dataLZ4, return_bytearray=True, return_bytes_read=False)
         data = json.loads(dataStudio)
         if nameDataSet is None:
             nameDataSet = filename[filename.rfind(os.sep)+1:]

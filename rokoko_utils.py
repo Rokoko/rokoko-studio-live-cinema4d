@@ -1,7 +1,11 @@
 import time, math, hashlib, json
 from ctypes import pythonapi, c_void_p, py_object
-import lz4.frame
 import c4d
+currentOS = c4d.GeGetCurrentOS()
+if currentOS == c4d.OPERATINGSYSTEM_WIN:
+    import packages.win.lz4.frame as lz4f
+elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+    import packages.mac.lz4.frame
 from rokoko_ids import *
 from rokoko_rig_tables import *
 
@@ -456,7 +460,7 @@ def ReadDataSet(filename):
     with open(filename, mode='rb') as f:
         dataCompressed = f.read()
         f.close()
-    dataJSON = lz4.frame.decompress(dataCompressed, return_bytearray=True, return_bytes_read=False)
+    dataJSON = lz4f.decompress(dataCompressed, return_bytearray=True, return_bytes_read=False)
     data = json.loads(dataJSON)
     return data
 

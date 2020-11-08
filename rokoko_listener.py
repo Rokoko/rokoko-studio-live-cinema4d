@@ -1,7 +1,11 @@
 import os, socket, json, time
 from threading import Condition
-import lz4.frame
 import c4d
+currentOS = c4d.GeGetCurrentOS()
+if currentOS == c4d.OPERATINGSYSTEM_WIN:
+    import packages.win.lz4.frame as lz4f
+elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+    import packages.mac.lz4.frame as lz4f
 from rokoko_ids import *
 from rokoko_rig_tables import *
 from rokoko_utils import *
@@ -442,7 +446,7 @@ class ThreadListener(c4d.threading.C4DThread):
         except:
             return False, False # error
         if force or self._receive:
-            studioData = lz4.frame.decompress(udpData, return_bytearray=True, return_bytes_read=False)
+            studioData = lz4f.decompress(udpData, return_bytearray=True, return_bytes_read=False)
             data = json.loads(studioData)
 
             self.DetectDataChange(data['scene'], float(data['fps']))
@@ -464,7 +468,7 @@ class ThreadListener(c4d.threading.C4DThread):
         else:
             self._cntDetect = (self._cntDetect + 1) % 60
             if self._cntDetect == 0:
-                studioData = lz4.frame.decompress(udpData, return_bytearray=True, return_bytes_read=False)
+                studioData = lz4f.decompress(udpData, return_bytearray=True, return_bytes_read=False)
                 data = json.loads(studioData)
                 self.DetectDataChange(data['scene'], float(data['fps']))
         return True, True  # success, new data
@@ -563,7 +567,7 @@ class ThreadListener(c4d.threading.C4DThread):
             idxFrameLast = len(self._liveQueue)
         dataJSON = json.dumps(self._liveQueue[idxFrameFirst:idxFrameLast])
         self._lockDataQueues.release()
-        dataLZ4 = lz4.frame.compress(dataJSON.encode('utf-8'))
+        dataLZ4 = lz4f.compress(dataJSON.encode('utf-8'))
         with open(filename, mode='wb') as f:
             f.write(dataLZ4)
             f.close()
