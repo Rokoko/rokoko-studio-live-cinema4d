@@ -1,4 +1,8 @@
-<h1 align="center">Rokoko Studio Live Plugin for Blender</h1>
+<h1 align="center">Rokoko Studio Live Plugin for Cinema 4D</h1>
+
+THIS DOC WAS JUST CLONED FROM BLENDER PROJECT, IT DOES NOT YET REFLECT THEW C4D VERSION!!!
+
+
 
 [Rokoko Studio](https://www.rokoko.com/en/products/studio) is a powerful and intuitive software for recording, visualizing and exporting motion capture.
 
@@ -105,32 +109,8 @@ In order to retarget an animation in Blender you will need to do the following:
 
 ## Changelog
 
-#### 1.2.1
-- Fixed login issue when using a Blender UI language other than English
-
-#### 1.2.0
-- Added support for the new [Rokoko Smartgloves](https://www.rokoko.com/products/smartgloves)
-- Fixed an issue with the auto-updater which caused updates to fail
-
-#### 1.1.1
-- Added Retargeting panel
-    - This allows you to easily retarget any animation from one character to another
-    - It uses our auto detect system to automatically find matching bones between the two characters
-- Added the functionality to save, import and export custom naming schemes
-- Added recording timer
-- Reworked saving of recordings
-    - This resulted in heavily improved processing speeds of recorded animations
-    - Recordings no longer need to be split
-    - Recorded animations are now using euler angles instead of quaternion
-      - This allows for easier editing and better continuity of the animation
-- Added patch that fixes the slow import of FBX animations in Blender 2.80 to 2.82
-    - This means that as long as you have this plugin enabled, you will get very fast FBX animation imports
-    - We submitted this patch to Blender officially and it got accepted, so it is included by default in Blender 2.83 and higher (fast imports for everyone, hooray!)
-
 #### 1.0.0
-- First version of Rokoko Studio Live for Blender
+- First version of Rokoko Studio Live for Cinema 4D
 - Character animation and recording
 - Face animation and recording
-- Virtual production animation and recording
-- Studio Command API support.
-- Auto-updater
+- Studio Command API support
