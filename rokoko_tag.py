@@ -347,11 +347,11 @@ class TagDataRokoko(c4d.plugins.TagData):
     def GetDDescriptionGroupMappingFace(self, tag, description, singleId):
         if not GetDDescriptionCreateGroup(tag, description, singleId, ID_TAG_GROUP_MAPPING_FACE, '', ID_TAG_GROUP_MAPPING, numColumns=3, defaultOpen=True):
             return False
-        if not GetDDescriptionCreateButton(tag, description, singleId, ID_TAG_BUTTON_GUESS_FACE_POSES, 'Guess Poses', ID_TAG_GROUP_MAPPING_FACE):
+        if not GetDDescriptionCreateButton(tag, description, singleId, ID_TAG_BUTTON_GUESS_FACE_POSES, 'Auto Detect Poses', ID_TAG_GROUP_MAPPING_FACE, scaleH=True):
             return False
-        if not GetDDescriptionCreateButton(tag, description, singleId, ID_TAG_BUTTON_FACE_PRESET, 'Presets...', ID_TAG_GROUP_MAPPING_FACE):
+        if not GetDDescriptionCreateButton(tag, description, singleId, ID_TAG_BUTTON_FACE_PRESET, 'Presets...', ID_TAG_GROUP_MAPPING_FACE, scaleH=True):
             return False
-        if not GetDDescriptionCreateButton(tag, description, singleId, ID_TAG_BUTTON_ADD_FACE_PRESET, 'Store Preset...', ID_TAG_GROUP_MAPPING_FACE):
+        if not GetDDescriptionCreateButton(tag, description, singleId, ID_TAG_BUTTON_ADD_FACE_PRESET, 'Save Preset...', ID_TAG_GROUP_MAPPING_FACE, scaleH=True):
             return False
         for nameInStudio, (idxPose, nameDisplay, _, _, _, _) in FACE_POSE_NAMES.items():
             if not GetDDescriptionCreateString(tag, description, singleId, ID_TAG_BASE_FACE_POSES + idxPose, nameDisplay, ID_TAG_GROUP_MAPPING, static=False):
