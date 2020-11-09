@@ -19,8 +19,8 @@ DO_FILE_ACTION = True
 
 LINKS = { ID_DLGMNGR_WEB_ROKOKO : 'https://www.rokoko.com',
           ID_DLGMNGR_WEB_STUDIO_LIVE_LICENSE : 'https://github.com/Rokoko/rokoko-studio-live-cinema4d/blob/main/LICENSE',
-          ID_DLGMNGR_WEB_DOCUMENTATION : 'https://rokoko.freshdesk.com/support/solutions/47000518296',
-          ID_DLGMNGR_WEB_FORUMS : 'https://rokoko.freshdesk.com/support/discussions',
+          ID_DLGMNGR_WEB_DOCUMENTATION : 'https://help.rokoko.com/support/solutions/folders/47000773247',
+          ID_DLGMNGR_WEB_FORUMS : 'https://rokoko.freshdesk.com/support/discussions/forums/47000400299',
         }
 WIDTH_ADD_BUTTON = 16
 
