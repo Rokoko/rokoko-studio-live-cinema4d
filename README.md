@@ -34,12 +34,12 @@ In Cinema 4D there are multiple possible locations for the plugins folder, and y
 ## For the Impatient: Making the Puppets Dance With Only Four Clicks
 These steps assume you are already familiar with Rokoko Studio, have enabled Live Streaming to Cinema 4D and in Rokoko Studio loaded a scene and started playback. Just so there's some motion data to be received and displayed in Cinema 4D. If you don't know how to achieve this, please skip to the next section.
 
-1. Open the Rokoko Studio Live Manager from the menu *Extensions* choose *Rokoko Studio Live*.
-  <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png" width="40%"/>
+1. Open the Rokoko Studio Live Manager from the menu _Extensions_ choose _Rokoko Studio Live_.
+   <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png" width="20%"/>
 
 2. On the *Connection* tab, click the "Connect" button (this step can be skipped later on using the auto-connect feature, see below). Depending on the scene playing currently in Rokoko Studio you should see names of your actors and props being displayed.
-  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png" width="30%"/> &nbsp;&nbsp;&nbsp;
-  <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png" width="30%"/>
+
+  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png" width="30%"/> &nbsp;&nbsp;&nbsp; <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png" width="30%"/>
 
 3. On the *Tags* tab, click the "+" button and choose "Create Connected Studio Scene"
   <img src="https://user-images.githubusercontent.com/73877880/98576843-698cdc80-22bb-11eb-8cfe-e4e2b69891a1.png" width="40%"/>
@@ -55,15 +55,17 @@ Now, that maybe your immediate appetite for results is satisfied, lets take a lo
 ## Introduction
 
 ### Plugin Components
-The Rokoko Studio Live plugin consists of two main components.
-1. *Rokoko Studio Live Manager*
-  The Rokoko Studio Live Manager is basically your central point to control almost everything Rokoko Studio Live related, that's going on in your scene.
-  <img src="https://user-images.githubusercontent.com/73877880/98577899-e40a2c00-22bc-11eb-9eef-aa2dd112c751.png" width="40%"/>
+The Rokoko Studio Live plugin consists of two main components: Rokoko Studio Live Manager and Rokoko Tag.
 
-2. *Rokoko Tag*
-  The Rokoko Tag can be assigned to arbitrary objects and it will, depending on the type of object its assigned to, take the role of either an actor, an actor's face or a prop. It will basically be the connection between Rokoko Studio's motion data and the actual objects in Cinema 4D's scene.
-  <img src="https://user-images.githubusercontent.com/73877880/98578165-4531ff80-22bd-11eb-91e7-211933c968cf.png"/>
-  <img src="https://user-images.githubusercontent.com/73877880/98577975-fedca080-22bc-11eb-8bed-93be1ee18231.png"/>
+#### Rokoko Studio Live Manager
+The Rokoko Studio Live Manager is basically your central point to control almost everything Rokoko Studio Live related, that's going on in your scene.
+<img src="https://user-images.githubusercontent.com/73877880/98577899-e40a2c00-22bc-11eb-9eef-aa2dd112c751.png" width="60%"/>
+
+#### Rokoko Tag
+The Rokoko Tag can be assigned to arbitrary objects and it will, depending on the type of object its assigned to, take the role of either an actor, an actor's face or a prop. It will basically be the connection between Rokoko Studio's motion data and the actual objects in Cinema 4D's scene.
+
+<img src="https://user-images.githubusercontent.com/73877880/98578165-4531ff80-22bd-11eb-91e7-211933c968cf.png"/> &nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/73877880/98577975-fedca080-22bc-11eb-8bed-93be1ee18231.png"/>
 
 ### A few Terms, we Should Agree on
 - "Studio" will be used synonymously with "Rokoko Studio", it does _not_ refer to the Studio Version of Cinema 4D, which was available for previous versions of Cinema 4D.
