@@ -20,7 +20,7 @@ This plugin lets you stream your animation data from Rokoko Studio directly into
  
 # Installing and setting up the plugin
 Learn how to set up the plugin and stream data from Rokoko studio to your own character in Cinema 4D. Take a look at this guide:
-https://github.com/Rokoko/rokoko-studio-live-unreal-engine/wiki/Rokoko-Studio-Live-Plugin-for-Unreal-Engine
+https://github.com/Rokoko/rokoko-studio-live-cinema4d/wiki/Rokoko-Studio-Live-Plugin-for-Cinema
  
 ### Demo Project
 Cinema 4D Demo project including a character already set up for live streaming from Rokoko Studio: 
