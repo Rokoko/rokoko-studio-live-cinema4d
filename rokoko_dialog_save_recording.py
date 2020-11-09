@@ -76,8 +76,8 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                 self.AddStaticText(0, c4d.BFH_SCALEFIT, name='') # Dummy
                 self.AddStaticText(0, c4d.BFH_SCALEFIT, name='Length')
                 self.AddComboBox(ID_DLGSAVE_LENGTH, c4d.BFH_SCALEFIT)
-                self.AddChild(ID_DLGSAVE_LENGTH, 0, 'Extend Projects End Time')
-                self.AddChild(ID_DLGSAVE_LENGTH, 1, 'Stop at Projects End Time')
+                self.AddChild(ID_DLGSAVE_LENGTH, 0, "Extend Project's End Time")
+                self.AddChild(ID_DLGSAVE_LENGTH, 1, "Stop at Project's End Time")
                 self.AddChild(ID_DLGSAVE_LENGTH, 2, 'Ignore')
                 self.AddStaticText(0, c4d.BFH_SCALEFIT, name='') # Dummy
                 self.AddCheckbox(ID_DLGSAVE_CREATE_IN_TAKE, c4d.BFH_SCALEFIT, name='Create New Take', initw=0, inith=0)
