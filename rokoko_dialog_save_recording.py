@@ -4,7 +4,6 @@ from rokoko_ids import *
 from rokoko_utils import *
 from rokoko_listener import *
 from rokoko_dialog_utils import *
-from rokoko_dialog_progress import *
 
 g_thdListener = GetListenerThread() # owned by rokoko_listener
 g_studioTPose = {}
