@@ -38,7 +38,7 @@ These steps assume you are already familiar with Rokoko Studio, have enabled Liv
   <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png"/>
 2. On the *Connection* tab, click the "Connect" button (this step can be skipped later on using the auto-connect feature, see below)
   Depending on the scene playing currently in Rokoko Studio you should see names of your actors and props being displayed.
-  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png"/> --> <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png"/>
+  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png" width="50%"/> --> <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png" width="50%"/>
 3. On the *Tags* tab, click the "+" button and choose "Create Connected Studio Scene"
   This will automatically create Rokoko Newton characters for actors and Null objects for props as needed for the Live stream received from Rokoko Studio.
 4. On the *Player* tab click "Start Player". Done.
