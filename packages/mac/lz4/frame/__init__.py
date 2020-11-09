@@ -1,4 +1,4 @@
-from ... import lz4
+import lz4
 import io
 import os
 import builtins
