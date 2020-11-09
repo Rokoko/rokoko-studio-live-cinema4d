@@ -2,7 +2,7 @@
 
 [Rokoko Studio](https://www.rokoko.com/en/products/studio) is a powerful and intuitive software for recording, visualizing and exporting motion capture.
 
-This plugin lets you stream your animation data from Rokoko Studio directly into Ciname 4D. It also allows you to easily record and retarget animations.
+This plugin lets you stream your animation data from Rokoko Studio directly into Cinema 4D. It also allows you to easily record and retarget animations.
 
 ---
 
@@ -23,7 +23,7 @@ This plugin lets you stream your animation data from Rokoko Studio directly into
 2. Just like with any other Cinema 4D plugin the downloaded archive needs to be unzipped into Cinema 4D's plugins folder.
 3. Start Cinema 4D (or restart it, if it was already running).
 
-### Note on step 2:
+#### Note on step 2:
 In Cinema 4D there are multiple possible locations for the plugins folder, and you can even define custom locations in Preferences. Nowadays, the recommended folder is in Cinema 4D's folder inside an user's home directory. If you have difficulties locating it, there's an easy way to find it from witthin Cinema 4D:
 - Open the Preferences
 - At the bottom there's a button "Open Preferences Folder..."
@@ -35,8 +35,10 @@ In Cinema 4D there are multiple possible locations for the plugins folder, and y
 These steps assume you are already familiar with Rokoko Studio, have enabled Live Streaming to Cinema 4D and in Rokoko Studio loaded a scene and started playback. Just so there's some motion data to be received and displayed in Cinema 4D. If you don't know how to achieve this, please skip to the next section.
 
 1. Open the Rokoko Studio Live Manager from the menu *Extensions* -> *Rokoko Studio Live*
+  <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png"/>
 2. On the *Connection* tab, click the "Connect" button (this step can be skipped later on using the auto-connect feature, see below)
-  Depeneding on the scene playing currently in Rokoko Studio you should see names of your actors and props being displayed.
+  Depending on the scene playing currently in Rokoko Studio you should see names of your actors and props being displayed.
+  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png"/> --> <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png"/>
 3. On the *Tags* tab, click the "+" button and choose "Create Connected Studio Scene"
   This will automatically create Rokoko Newton characters for actors and Null objects for props as needed for the Live stream received from Rokoko Studio.
 4. On the *Player* tab click "Start Player". Done.
@@ -99,7 +101,7 @@ In order to receive motion data from Studio, both sides (Studio and C4D) need to
 ### Enabling Rokoko Studio Live in Rokoko Studio
 - In Rokoko Studio go to settings and click on **Studio Live** in the dropdown menu and enable the Cinema 4D data stream. You can customize the streaming address and port by clicking the cogwheel icon at the top left.
 
-  <img src="https://user-images.githubusercontent.com/73877880/98572643-2419e080-22b6-11eb-87f2-816ffd6560e7.png" height="500" /> &nbsp;&nbsp;&nbsp;
+  <img src="TODO" height="500" /> &nbsp;&nbsp;&nbsp;
   <img src="TODO"/>
 
 ### Receiving the Data in Cinema 4D
