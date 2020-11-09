@@ -4,6 +4,7 @@ import c4d
 DEVELOPMENT = True # Users should rather have this set to False
 basedir = __file__[:__file__.rfind(os.sep)]
 sys.path.insert(0, basedir)
+
 if DEVELOPMENT == True:
     # not nice, but during development the reload is needed for Reload Python Plugins to work properly (and use changed sources)
     for module in sys.modules.values():
