@@ -34,14 +34,20 @@ In Cinema 4D there are multiple possible locations for the plugins folder, and y
 ## For the Impatient: Making the Puppets Dance With Only Four Clicks
 These steps assume you are already familiar with Rokoko Studio, have enabled Live Streaming to Cinema 4D and in Rokoko Studio loaded a scene and started playback. Just so there's some motion data to be received and displayed in Cinema 4D. If you don't know how to achieve this, please skip to the next section.
 
-1. Open the Rokoko Studio Live Manager from the menu *Extensions* -> *Rokoko Studio Live*
-  <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png"/>
-2. On the *Connection* tab, click the "Connect" button (this step can be skipped later on using the auto-connect feature, see below)
-  Depending on the scene playing currently in Rokoko Studio you should see names of your actors and props being displayed.
-  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png" width="40%"/>&nbsp;-->&nbsp;<img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png" width="40%"/>
+1. Open the Rokoko Studio Live Manager from the menu *Extensions* choose *Rokoko Studio Live*.
+  <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png" width="40%"/>
+
+2. On the *Connection* tab, click the "Connect" button (this step can be skipped later on using the auto-connect feature, see below). Depending on the scene playing currently in Rokoko Studio you should see names of your actors and props being displayed.
+  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png" width="30%"/> &nbsp;&nbsp;&nbsp;
+  <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png" width="30%"/>
+
 3. On the *Tags* tab, click the "+" button and choose "Create Connected Studio Scene"
+  <img src="https://user-images.githubusercontent.com/73877880/98576843-698cdc80-22bb-11eb-8cfe-e4e2b69891a1.png" width="40%"/>
   This will automatically create Rokoko Newton characters for actors and Null objects for props as needed for the Live stream received from Rokoko Studio.
+  <img src="https://user-images.githubusercontent.com/73877880/98577107-c38da200-22bb-11eb-836c-13b5925d2eb2.png"/>
+
 4. On the *Player* tab click "Start Player". Done.
+  <img src="https://user-images.githubusercontent.com/73877880/98577256-f768c780-22bb-11eb-8f5e-336aff21c74d.png"/>
 
 Now, that maybe your immediate appetite for results is satisfied, lets take a look at what we just did exactly and what other options you have when working with Rokoko Studio Live.
 
@@ -52,8 +58,12 @@ Now, that maybe your immediate appetite for results is satisfied, lets take a lo
 The Rokoko Studio Live plugin consists of two main components.
 1. *Rokoko Studio Live Manager*
   The Rokoko Studio Live Manager is basically your central point to control almost everything Rokoko Studio Live related, that's going on in your scene.
+  <img src="https://user-images.githubusercontent.com/73877880/98577899-e40a2c00-22bc-11eb-9eef-aa2dd112c751.png" width="40%"/>
+
 2. *Rokoko Tag*
   The Rokoko Tag can be assigned to arbitrary objects and it will, depending on the type of object its assigned to, take the role of either an actor, an actor's face or a prop. It will basically be the connection between Rokoko Studio's motion data and the actual objects in Cinema 4D's scene.
+  <img src="https://user-images.githubusercontent.com/73877880/98578165-4531ff80-22bd-11eb-91e7-211933c968cf.png"/>
+  <img src="https://user-images.githubusercontent.com/73877880/98577975-fedca080-22bc-11eb-8bed-93be1ee18231.png"/>
 
 ### A few Terms, we Should Agree on
 - "Studio" will be used synonymously with "Rokoko Studio", it does _not_ refer to the Studio Version of Cinema 4D, which was available for previous versions of Cinema 4D.
@@ -80,13 +90,15 @@ The Manager has six tabs dedicated to certain tasks or purposes.
 - Command API
   - Provides means to remote control certain tasks in Rokoko Studio.
 
-### Overview of Rokoko Studio Live Manager
-When being assigned to an object, it will try to automatically detect its type. One can still change the type later, though only to types suitable for the object it is assigned to.
+### Overview of Rokoko Tag
+When being assigned to an object, the Rokoko Tag will try to automatically detect its type. One can still change the type later, though it can only be changed to types suitable for the object it is assigned to.
+
 When the tag is assigned to...
 - a Joint or an arbitrary object with a Joint as _first_ child, the tag will assume to be of type Actor.
 - an Object which carries a PoseMorph tag, the tag will assume to be of type Face.
 - any other object, it will assume to be of type Prop.
-As also joints or objects with PoseMorph tags could be used as Props, you can always change the type of the tag to Prop.
+
+Note: As also joints or objects with PoseMorph tags could be used as Props, you can always change the type of the tag to Prop.
 
 Depending on its type the Rokoko Tag offers a bunch of options grouped into four tabs.
 - Tag Properties: The main group, where you can select the data assigned to this tag.
@@ -101,32 +113,39 @@ In order to receive motion data from Studio, both sides (Studio and C4D) need to
 ### Enabling Rokoko Studio Live in Rokoko Studio
 - In Rokoko Studio go to settings and click on **Studio Live** in the dropdown menu and enable the Cinema 4D data stream. You can customize the streaming address and port by clicking the cogwheel icon at the top left.
 
-  <img src="TODO" height="500" /> &nbsp;&nbsp;&nbsp;
-  <img src="TODO"/>
+  <img src="https://user-images.githubusercontent.com/73877880/98578673-f042b900-22bd-11eb-9d9b-1fce247d667d.png" height="500" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://user-images.githubusercontent.com/73877880/98578703-f9cc2100-22bd-11eb-879e-db48a64b0e3d.png"/>
 
 ### Receiving the Data in Cinema 4D
 - Open the Rokoko Studio Live Manager from the *Extensions* menu. There are six tabs of which the leftmost one is the "Connection" tab. It should be open by default. As long as the default port (14043) is fine for you and you didn't change it in Studio, all you need to do is press the "Connect" button.
 
-  <img src="TODO"/> &nbsp;&nbsp;&nbsp;
-  <img src="TODO"/> &nbsp;&nbsp;&nbsp;
-  <img src="TODO"/>
+  <img src="https://user-images.githubusercontent.com/73877880/98574796-a905f980-22b8-11eb-9e32-6219ea0a64db.png"/> &nbsp;&nbsp;&nbsp;
+  <img src="https://user-images.githubusercontent.com/73877880/98575236-36494e00-22b9-11eb-8778-087e81d28199.png"/> &nbsp;&nbsp;&nbsp;
+  <img src="https://user-images.githubusercontent.com/73877880/98575260-3f3a1f80-22b9-11eb-8f00-2ffe2d5392b5.png"/>
 
 #### Connection Status
 The status of the connection is displayed as a coloured dot nect to the connect button as well as in the upper right corner of the Manager.
 There are four different states:
-<img src="TODO Screenshots"/>
 
 - Red: Rokoko Studio Live is _not_ connected
+  <img src="https://user-images.githubusercontent.com/73877880/98579057-66dfb680-22be-11eb-9525-f4f2aca6f8ba.png"/>
+
 - Green: Rokoko Studio Live is connected and the stream was properly detected
+  <img src="https://user-images.githubusercontent.com/73877880/98579106-73fca580-22be-11eb-9a33-667c39b57f81.png"/>
+
 - Orange: Rokoko Studio Live has opened a connection, but has not been able to detect a stream. This may have a bunch of reasons:
   - Rokoko Studio is not running
   - Rokoko Studio is running, but Rokoko Studio Live has not been enabled
   - Rokoko Studio is running and has Rokoko Studio Live enabled, but it is using a different port number, than is used inside Cinema 4D.
+  <img src="https://user-images.githubusercontent.com/73877880/98579245-a1e1ea00-22be-11eb-8279-64d6550287ca.png"/>
+
 - Grey: There is no connection to Rokoko Studio, but clips are being played inside Cinema 4D. More on this later.
+  <img src="https://user-images.githubusercontent.com/73877880/98579288-b32af680-22be-11eb-8fae-6e7df9bb60c7.png"/>
 
 #### Changing the Port Number
 In order to edit the connection settings, Rokoko Studio Live needs to be disconnected (red dot). Clicking the "..." button left of the connection offers an "Edit..." option.
-<img src="TODO Screenshot"/>
+  <img src="https://user-images.githubusercontent.com/73877880/98579501-07ce7180-22bf-11eb-8c7d-5be9da634cf9.png"/> &nbsp;&nbsp;&nbsp;
+  <img src="https://user-images.githubusercontent.com/73877880/98579449-f8e7bf00-22be-11eb-9395-940d7c55e705.png"/>
 
 #### Auto Connect
 The checkbox left of the "Connect" button enables the Auto Connect feature. If set, Cinema 4D will automatically open this connection when starting up. No worries, it's not doing much and should hurt any other work you are doing in Cinema 4D.
