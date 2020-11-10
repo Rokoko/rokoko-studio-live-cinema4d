@@ -872,6 +872,10 @@ class TagDataRokoko(c4d.plugins.TagData):
         if flags & c4d.ASSETDATA_FLAG_TEXTURESONLY:
             return True
         bcDataSet = GetDataSetFromId(tag[ID_TAG_DATA_SET])
+        if bcDataSet is None:
+            return True
+        if bcDataSet[ID_BC_DATASET_TYPE] == 0 or bcDataSet.GetId() == GetConnectedDataSetId():
+            return True
         filename = bcDataSet[ID_BC_DATASET_FILENAME]
         if bcDataSet[ID_BC_DATASET_IS_LOCAL]:
             if filename[0] == '.':
@@ -881,7 +885,12 @@ class TagDataRokoko(c4d.plugins.TagData):
 
     def MessageClearSuggestedFolder(self, tag):
         idDataSet = tag[ID_TAG_DATA_SET]
-        bcDataSet = GetDataSetFromId(idDataSet).GetClone(c4d.COPYFLAGS_NONE)
+        bcDataSet = GetDataSetFromId(idDataSet)
+        if bcDataSet is None:
+            return True
+        bcDataSet = bcDataSet.GetClone(c4d.COPYFLAGS_NONE)
+        if bcDataSet[ID_BC_DATASET_TYPE] == 0 or bcDataSet.GetId() == GetConnectedDataSetId():
+            return True
         if bcDataSet[ID_BC_DATASET_IS_LOCAL]:
             RemoveLocalDataSet(idDataSet)
         _, bcDataSet[ID_BC_DATASET_FILENAME] = os.path.split(bcDataSet[ID_BC_DATASET_FILENAME])
