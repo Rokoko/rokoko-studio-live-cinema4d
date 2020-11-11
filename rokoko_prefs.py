@@ -21,8 +21,8 @@ class PreferenceDataRokoko(c4d.plugins.PreferenceData):
             return True
 
         def GetDDescription(self, node, description, flags):
-            if not description.LoadDescription('ssppreferences'):
-                print('{0} ERROR: Failed to load Description'.format(PLUGIN_NAME))
+            if not description.LoadDescription('rokokopreferences'):
+                print('{0} ERROR: Failed to load Description'.format(PLUGIN_NAME_COMMAND_MANAGER))
                 return False
             if flags & c4d.DESCFLAGS_DESC_NEEDDEFAULTVALUE:
                 self.Init(node, description)
