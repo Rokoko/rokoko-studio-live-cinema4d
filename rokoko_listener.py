@@ -352,6 +352,9 @@ class ThreadListener(c4d.threading.C4DThread):
         filename = bcDataSet[ID_BC_DATASET_FILENAME]
         if bcDataSet[ID_BC_DATASET_IS_LOCAL] and filename[0] == '.' or os.sep not in filename:
             pathDoc = c4d.documents.GetActiveDocument().GetDocumentPath()
+            if filename[0] == '.':
+                filename = filename[2:]
+            filename = filename.replace('\\', os.sep)
             filename = os.path.join(pathDoc, filename)
         data = ReadDataSet(filename)
         if data is None:
