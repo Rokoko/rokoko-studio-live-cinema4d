@@ -1134,10 +1134,11 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
     def CommandTagsPopup(self):
         bcMenu = c4d.BaseContainer()
-        bcConnected = GetConnectedDataSet()
-        if bcConnected is not None:
-            bcMenu.InsData(ID_SUBMENU_TAGS_CREATE_STUDIO_LIVE_SCENE, 'Create Connected Studio Scene')
-            bcMenu.InsData(0, '')
+        disableItem = ''
+        if not IsConnected():
+            disableItem = '&d&'
+        bcMenu.InsData(ID_SUBMENU_TAGS_CREATE_STUDIO_LIVE_SCENE, 'Create Connected Studio Scene' + disableItem)
+        bcMenu.InsData(0, '')
         bcMenu.InsData(ID_SUBMENU_TAGS_CREATE_CHARACTER_NEWTON, 'Create Rokoko Newton Character')
         bcMenu.InsData(ID_SUBMENU_TAGS_CREATE_BONES_NEWTON, 'Create Rokoko Newton Bones')
         bcMenu.InsData(ID_SUBMENU_TAGS_CREATE_CHARACTER_NEWTON_WITH_FACE, 'Create Rokoko Newton Character with Face')
