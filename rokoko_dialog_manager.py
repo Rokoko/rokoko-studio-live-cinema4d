@@ -945,15 +945,15 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             if filenameNew != filename:
                 if move:
                     msg = 'Move data set file to project folder?\n'
-                    msg += 'From: {}\n'.format(filename)
-                    msg += 'To: {}\n'.format(filenameDst)
+                    msg += 'From: {0}\n'.format(filename)
+                    msg += 'To: {0}\n'.format(filenameDst)
                     msg += 'Yes: Move file\n'
                     msg += 'No: Move data set reference, only\n'
                     msg += 'Cancel: Abort'
                 else:
                     msg = 'Copy data set file to project folder?\n'
-                    msg += 'From: {}\n'.format(filename)
-                    msg += 'To: {}\n'.format(filenameDst)
+                    msg += 'From: {0}\n'.format(filename)
+                    msg += 'To: {0}\n'.format(filenameDst)
                     msg += 'Yes: Copy file\n'
                     msg += 'No: Copy data set reference, only\n'
                     msg += 'Cancel: Abort'
@@ -1226,7 +1226,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
                 print('ERROR: Lacking Rokoko Tag.')
                 continue
             objRootNew.SetName(name)
-            tag.SetName('Rokoko Tag {}'.format(name))
+            tag.SetName('Rokoko Tag {0}'.format(name))
             docCurrent.InsertObject(objRootNew, pred=objLast)
             docCurrent.AddUndo(c4d.UNDOTYPE_NEW, objRootNew)
             objLast = objRootNew
@@ -1252,7 +1252,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             objProp[c4d.ID_BASEOBJECT_COLOR] = color
             objProp[c4d.ID_BASEOBJECT_USECOLOR] = 2
             tag = objProp.MakeTag(PLUGIN_ID_TAG)
-            tag.SetName('Rokoko Tag {}'.format(name))
+            tag.SetName('Rokoko Tag {0}'.format(name))
             docCurrent.InsertObject(objProp, pred=objLast)
             docCurrent.AddUndo(c4d.UNDOTYPE_NEW, objProp)
             objLast = objProp
@@ -1655,7 +1655,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             else:
                 #NO_LIVE_SMARTSUIT
                 #NO_ACTIVE_RECORDING
-                c4d.gui.MessageDialog('Rokoko Command API failed to {}\n\nError Code:       {}\nError Message: {}'.format(actionText, responseCode, description))
+                c4d.gui.MessageDialog('Rokoko Command API failed to {0}\n\nError Code:       {1}\nError Message: {2}'.format(actionText, responseCode, description))
                 ok = False
         except:
             c4d.gui.MessageDialog('Command API failed to connect to Rokoko Studio.\nPlease check IP, port and key configured for Command API in Connection.')

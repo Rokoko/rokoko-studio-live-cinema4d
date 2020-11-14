@@ -128,7 +128,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         self.AddChild(ID_DLGSAVE_FRAME_SKIP, 4, '4:1')
         if self.GetInt32(ID_DLGSAVE_TIMING) == 0:
             self.AddChild(ID_DLGSAVE_FRAME_SKIP, 1002, '')
-            self.AddChild(ID_DLGSAVE_FRAME_SKIP, 500, '{} FPS (Project)'.format(doc.GetFps()))
+            self.AddChild(ID_DLGSAVE_FRAME_SKIP, 500, '{0} FPS (Project)'.format(doc.GetFps()))
             self.AddChild(ID_DLGSAVE_FRAME_SKIP, 1003, '')
             self.AddChild(ID_DLGSAVE_FRAME_SKIP, 10, '10 FPS')
             self.AddChild(ID_DLGSAVE_FRAME_SKIP, 24, '24 FPS')
@@ -617,7 +617,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         c4d.EventAdd()
         c4d.StatusClear()
         if createTake:
-            c4d.gui.MessageDialog('Successfully baked keyframes in Take "{}".'.format(nameDataSet))
+            c4d.gui.MessageDialog('Successfully baked keyframes in Take "{0}".'.format(nameDataSet))
         else:
             c4d.gui.MessageDialog('Successfully baked keyframes in current Take.')
 
@@ -659,9 +659,9 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                     tag[ID_TAG_DATA_SET] = idDataSetNew
         c4d.EventAdd()
         if local:
-            c4d.gui.MessageDialog('Successfully stored clip "{}" in project.'.format(name))
+            c4d.gui.MessageDialog('Successfully stored clip "{0}" in project.'.format(name))
         else:
-            c4d.gui.MessageDialog('Successfully stored global clip "{}".'.format(name))
+            c4d.gui.MessageDialog('Successfully stored global clip "{0}".'.format(name))
 
     def Command(self, id, msg):
         if id == ID_DLGSAVE_SET_PATH_DATASET:

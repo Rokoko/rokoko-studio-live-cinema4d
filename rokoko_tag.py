@@ -128,15 +128,15 @@ class TagDataRokoko(c4d.plugins.TagData):
         idDataSet = bcDataSet.GetId()
         nameDataSet = bcDataSet[ID_BC_DATASET_NAME]
         if rigType & RIG_TYPE_ACTOR and bcDataSet[ID_BC_DATASET_NUM_ACTORS] > 0:
-            bcMenu[idDataSet] = '{} ({})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_ACTORS])
+            bcMenu[idDataSet] = '{0} ({1})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_ACTORS])
         elif rigType & RIG_TYPE_ACTOR_FACE and bcDataSet[ID_BC_DATASET_NUM_FACES] > 0:
-            bcMenu[idDataSet] = '{} ({})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_FACES])
+            bcMenu[idDataSet] = '{0} ({1})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_FACES])
         elif rigType & RIG_TYPE_LIGHT and bcDataSet[ID_BC_DATASET_NUM_LIGHTS] > 0:
-            bcMenu[idDataSet] = '{} ({})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_LIGHTS])
+            bcMenu[idDataSet] = '{0} ({1})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_LIGHTS])
         elif rigType & RIG_TYPE_CAMERA and bcDataSet[ID_BC_DATASET_NUM_CAMERAS] > 0:
-            bcMenu[idDataSet] = '{} ({})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_CAMERAS])
+            bcMenu[idDataSet] = '{0} ({1})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_CAMERAS])
         elif rigType & RIG_TYPE_PROP and bcDataSet[ID_BC_DATASET_NUM_PROPS] > 0:
-            bcMenu[idDataSet] = '{} ({})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_PROPS])
+            bcMenu[idDataSet] = '{0} ({1})'.format(nameDataSet, bcDataSet[ID_BC_DATASET_NUM_PROPS])
 
     def SetDataSetMenuContainer(self, tag):
         description = tag.GetDescription(c4d.DESCFLAGS_DESC_NONE)
@@ -246,8 +246,8 @@ class TagDataRokoko(c4d.plugins.TagData):
                     addEntry = True
                 if addEntry:
                     name = bcEntity[ID_BC_ENTITY_NAME]
-                    bcMenu[MyHash(name)] = '{} (#{})'.format(name, idxEntity)
-                    nameByIndex = '#{} - {}'.format(idxEntity, name)
+                    bcMenu[MyHash(name)] = '{0} (#{1})'.format(name, idxEntity)
+                    nameByIndex = '#{0} - {1}'.format(idxEntity, name)
                     actorsByIndex.append((idxEntity, nameByIndex))
             bcMenu[111111] = ''
             for idxEntity, nameByIndex in actorsByIndex:

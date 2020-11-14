@@ -1,12 +1,16 @@
+# Besides some global initializations, all plugins needed for Rokoko Studio Live are registered here.
+# Basically here's the entry/starting point of the plugin.
+#
+# Additionally C4D's plugin messages (PluginMessage()) are handled here, mainly some
+# startup/shutdown logic.
 import sys, os, importlib
 import c4d
 
 DEVELOPMENT = True # Users should rather have this set to False
 basedir = __file__[:__file__.rfind(os.sep)]
 sys.path.insert(0, basedir)
-
 if DEVELOPMENT == True:
-    # not nice, but during development the reload is needed for Reload Python Plugins to work properly (and use changed sources)
+    # Not nice, but during development the reload is needed for Reload Python Plugins to work properly (i.e. use changed sources)
     for module in sys.modules.values():
         end = len('rokoko_')
         if len(module.__name__) < end:
@@ -25,29 +29,47 @@ from rokoko_commands import *
 from rokoko_tag import *
 from rokoko_prefs import *
 
+
+# g_studioTPose dictionary contains Rokoko Studio's T-Pose.
+# For every bodypart (referenced by it's name inside JSON data) it stores the rotation as a matrix.
+# Note: The matrix is stored _inverted_, as this is the only form it's needed in.
 g_studioTPose = {}
 def LoadStudioTPose():
     global g_studioTPose
+
+    # Load JSON T-Pose data
     filenameStudioTPose = os.path.join(os.path.dirname(__file__), 'res', 'tposeStudio.json')
     with open(filenameStudioTPose, mode='r') as f:
+        # Read data from file
         studioData = f.read()
         f.close()
+
+        # Decode JSON
         dataJSON = json.loads(studioData)
-        dataBody = dataJSON['scene']['actors'][0]['body']
+        dataBody = dataJSON['scene']['actors'][0]['body'] # body is all we need
+
+        # Store inverted matrices in the dictionary
         g_studioTPose = {}
         for nameBodyPart, dataPosRot in dataBody.items():
             g_studioTPose[nameBodyPart] = ~JSONQuaternionToMatrix(dataPosRot['rotation'])
+
+        # Allow submodules (namely Rokoko tag and Svae Recording dialog) to access this global resource
         TagSetGlobalStudioTPose(g_studioTPose)
         DlgSaveSetGlobalStudioTPose(g_studioTPose)
 
-import time
+
+# PluginMessage() will be called by Cinema 4D to communicate status changes.
+# Mainly these are related to certain phases during start up or shut down.
+# We need to cleaanup properly during shut down, as well as when the user "Reloads Paython Plugins".
 def PluginMessage(id, data):
     if id == c4d.C4DPL_RELOADPYTHONPLUGINS or id == c4d.C4DPL_ENDACTIVITY:
+        # Either C4D is shutting down or Python plugins are about to be reloaded
+        global g_studioTPose
+
+        # Get rid of any global resources and references
         DestroyListenerThread()
         CommandsDestroyGlobals()
         RemoveConnectedDataSet()
-        global g_tPose, g_studioTPose
-        g_tPose = {}
         g_studioTPose = {}
         DlgAboutDestroyGlobals()
         DlgSaveDestroyGlobals()
@@ -57,46 +79,67 @@ def PluginMessage(id, data):
         return True
     return False
 
+
+# RegisterImageAsIcon() load an image from a file and registers it with the given ID.
+# IDs should be valid plugin IDs retrieved from Plugin Café.
 def RegisterImageAsIcon(id, filename, mirrorHorizontally=False, size=None):
+    # Load icon bitmap
     bmpIcon = c4d.bitmaps.BaseBitmap()
-    bmpIcon.InitWith(os.path.join(os.path.dirname(__file__), 'res', filename))
+    result, _ = bmpIcon.InitWith(os.path.join(os.path.dirname(__file__), 'res', filename))
+    if result != c4d.IMAGERESULT_OK:
+        print('ERROR: Failed ({0}) to load icon bitmap: {1}'.format(result, filename))
+        return
+
+    # Optionally mirror the icon (used for gloves for example)
     if mirrorHorizontally:
         bmpIconMirrored = bmpIcon.GetClone()
         w, h = bmpIcon.GetSize()
         for y in range(h):
             for x in range(w):
-                r, g, b = bmpIconMirrored.GetPixel(w-x-1, y)
-                a = bmpIconMirrored.GetAlphaPixel(bmpIconMirrored.GetChannelNum(0), w-x-1, y)
+                xFromRight = w - x - 1
+                r, g, b = bmpIconMirrored.GetPixel(xFromRight, y)
+                a = bmpIconMirrored.GetAlphaPixel(bmpIconMirrored.GetChannelNum(0), xFromRight, y)
                 bmpIcon.SetPixel(x, y, r, g, b)
                 bmpIcon.SetAlphaPixel(bmpIcon.GetChannelNum(0), x, y, a)
+
+    # Optionally scale the icon
     if size is not None:
         bmpIconNewSize = c4d.bitmaps.BaseBitmap()
         bmpIconNewSize.Init(size, size)
         bmpIcon.ScaleIt(bmpIconNewSize, 256, True, False)
         bmpIcon = bmpIconNewSize
+
+    # Register the icon within C4D
     result = c4d.gui.RegisterIcon(id, bmpIcon, x=0, y=0, w=-1, h=-1)
     if not result:
         print('ERROR: Icon registration failed:', filename)
     return bmpIcon
 
+
+# RegisterIcons() registers all icons needed by the plugin.
+# It returns the bitmap of the Rokoko Studio Live logo for use during plugin registration.
 def RegisterIcons():
-    if DEVELOPMENT:
-        c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_ACTOR)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_FACE)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_LIGHT)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_CAMERA)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_PROP)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_SUIT)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_GLOVE_LEFT)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_GLOVE_RIGHT)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_FACE)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_PROP)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_PROFILE)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_STUDIO_LIVE)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_RECORD_START)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_RECORD_STOP)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_CALIBRATE_SUIT)
-        c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_RESTART_SUIT)
+    # Icons can not be registered twice.
+    # "Reload Python Plugins" to work properly, we first need unregister all icons,
+    # we registered in the previous run.
+    c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_ACTOR)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_FACE)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_LIGHT)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_CAMERA)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_PROP)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_SUIT)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_GLOVE_LEFT)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_GLOVE_RIGHT)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_FACE)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_PROP)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_PROFILE)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_ICON_STUDIO_LIVE)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_RECORD_START)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_RECORD_STOP)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_CALIBRATE_SUIT)
+    c4d.gui.UnregisterIcon(PLUGIN_ID_COMMAND_API_ICON_RESTART_SUIT)
+
+    # Register all icons
     RegisterImageAsIcon(PLUGIN_ID_TAG_ICON_ACTOR, 'icon-row-suit-32.png')
     RegisterImageAsIcon(PLUGIN_ID_TAG_ICON_FACE, 'icon-row-face-32.png')
     RegisterImageAsIcon(PLUGIN_ID_TAG_ICON_LIGHT, 'rokoko_tag_light.png')
@@ -115,45 +158,48 @@ def RegisterIcons():
     RegisterImageAsIcon(PLUGIN_ID_COMMAND_API_ICON_RESTART_SUIT, 'icon-restart-32.png')
     return bmpIconForCommand
 
+
+# RegisterRokokoStudioLive() registers all plugins needed for Rokoko Studi Live.
+# This is done depending on plugin's enabled state in prefs.
 def RegisterRokokoStudioLive():
+    # Check if the plugin is enabled in preferences
     bcPrefs = GetWorldPrefs()
-    if bcPrefs[ID_PREF_PLUGIN_ENABLED] is None or bcPrefs[ID_PREF_PLUGIN_ENABLED]:
+    if bcPrefs[ID_PREF_PLUGIN_ENABLED] or bcPrefs[ID_PREF_PLUGIN_ENABLED] is None:
+        # Initialize globally needed structures
         InitBaseContainer()
         InitRokokoLogo()
         bmpIcon = RegisterIcons()
         LoadStudioTPose()
-        res = c4d.plugins.RegisterMessagePlugin(id=PLUGIN_ID_MESSAGEDATA, str='', info=0, dat=MessageDataRokoko())
-        if not res:
-            print('ERROR: Rokoko Studio Live ({}) failed to register MessageData.'.format(PLUGIN_VERSION))
+
+        # Register plugins
+        result = c4d.plugins.RegisterMessagePlugin(id=PLUGIN_ID_MESSAGEDATA, str='',
+                                                   info=0, dat=MessageDataRokoko())
+        if not result:
+            print('ERROR: Rokoko Studio Live ({0}) failed to register MessageData.'.format(PLUGIN_VERSION))
             return
-        res = c4d.plugins.RegisterTagPlugin(id=PLUGIN_ID_TAG,
-                                            str=PLUGIN_NAME_TAG,
-                                            info=c4d.TAG_EXPRESSION | c4d.TAG_VISIBLE,
-                                            g=TagDataRokoko,
-                                            description='Trokoko',
-                                            icon=bmpIcon)
-        if not res:
-            print('ERROR: Rokoko Studio Live ({}) failed to register Tag.'.format(PLUGIN_VERSION))
+        result = c4d.plugins.RegisterTagPlugin(id=PLUGIN_ID_TAG, str=PLUGIN_NAME_TAG,
+                                               info=c4d.TAG_EXPRESSION | c4d.TAG_VISIBLE, g=TagDataRokoko,
+                                               description='Trokoko', icon=bmpIcon)
+        if not result:
+            print('ERROR: Rokoko Studio Live ({0}) failed to register Tag.'.format(PLUGIN_VERSION))
             return
-        res = c4d.plugins.RegisterCommandPlugin(id=PLUGIN_ID_COMMAND_MANAGER,
-                                                str=PLUGIN_NAME_COMMAND_MANAGER,
-                                                help='Open {}'.format(PLUGIN_NAME_COMMAND_MANAGER),
-                                                info=0,
-                                                dat=CommandDataRokokoManager(),
-                                                icon=bmpIcon)
-        if not res:
-            print('ERROR: Rokoko Studio Live ({}) failed to register Manager CommandData.'.format(PLUGIN_VERSION))
+        result = c4d.plugins.RegisterCommandPlugin(id=PLUGIN_ID_COMMAND_MANAGER, str=PLUGIN_NAME_COMMAND_MANAGER,
+                                                   help='Open {0}'.format(PLUGIN_NAME_COMMAND_MANAGER), info=0,
+                                                   dat=CommandDataRokokoManager(), icon=bmpIcon)
+        if not result:
+            print('ERROR: Rokoko Studio Live ({0}) failed to register Manager CommandData.'.format(PLUGIN_VERSION))
             return
-        print('Successfully registered Rokoko Studio Live ({}).'.format(PLUGIN_VERSION))
-    res = c4d.plugins.RegisterPreferencePlugin(id=PLUGIN_ID_PREFS,
-                                               g=PreferenceDataRokoko,
-                                               name=PLUGIN_NAME_COMMAND_MANAGER,
-                                               description='rokokopreferences',
-                                               parentid=0,
-                                               sortid=0)
+        print('Successfully registered Rokoko Studio Live ({0}).'.format(PLUGIN_VERSION))
+
+    # The preferences page is registered in any case (even if plugin got disabled by the user).
+    # It's needed by the user to reenable the plugin.
+    res = c4d.plugins.RegisterPreferencePlugin(id=PLUGIN_ID_PREFS, g=PreferenceDataRokoko,
+                                               name=PLUGIN_NAME_COMMAND_MANAGER, description='rokokopreferences',
+                                               parentid=0, sortid=0)
     if not res:
-        print('ERROR: Rokoko Studio Live ({}) failed to register PrefData.'.format(PLUGIN_VERSION))
+        print('ERROR: Rokoko Studio Live ({0}) failed to register PrefData.'.format(PLUGIN_VERSION))
 
 
+# EXECUTION STARTS HERE
 if __name__ == "__main__":
     RegisterRokokoStudioLive()

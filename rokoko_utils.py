@@ -558,6 +558,6 @@ def timing(f):
         global g_timingMax, g_timingMin
         g_timingMin = min(g_timingMin, timeDiff)
         g_timingMax = max(g_timingMax, timeDiff)
-        print('T {} ms  {}  {}'.format(timeDiff, g_timingMin, g_timingMax))
+        print('T {0} ms  {1}  {2}'.format(timeDiff, g_timingMin, g_timingMax))
         return ret
     return wrapTiming
