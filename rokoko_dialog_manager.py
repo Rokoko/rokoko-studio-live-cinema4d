@@ -1407,25 +1407,21 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         choice = self.GetInt32(ID_DLGMNGR_PLAYER_TAG_SELECTION)
         tagsLive = []
         self._tags = GetTagList()
-        if choice == 0: #all:
+        if choice == 0: # all:
             tagsLive = self._tags
-        elif choice == 2: #live:
-            bcConnected = GetConnectedDataSet()
-            if bcConnected is None:
-                return
+        elif choice == 2: # live:
+            idConnected = GetConnectedDataSetId()
             for tag in self._tags:
-                if tag[ID_TAG_DATA_SET] == bcConnected.GetId():
+                if tag[ID_TAG_DATA_SET] == idConnected:
                     tagsLive.append(tag)
         elif choice == 3: # data sets, only
-            bcConnected = GetConnectedDataSet()
-            if bcConnected is None:
-                return
+            idConnected = GetConnectedDataSetId()
             for tag in self._tags:
-                if tag[ID_TAG_DATA_SET] != bcConnected.GetId():
+                if tag[ID_TAG_DATA_SET] != idConnected:
                     tagsLive.append(tag)
-        elif idxTag != -1:
+        elif idxTag != -1: # the one specified by idxTag
             tagsLive = [self._tags[idxTag]]
-        else:
+        else: # selected tags
             for tag in self._tags:
                 if tag[ID_TAG_SELECTED_IN_MANAGER]:
                     tagsLive.append(tag)

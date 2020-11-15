@@ -1,3 +1,12 @@
+# In Cinema 4D a MessageData plugin has no real function itself. As the name suggests it's main
+# purpose is to receive messages. In contrast to dialogs it does so all the time
+# (C4D's runtime, while a dialog needs to be open to receive messages).
+#
+# Messages are received in CoreMessage(), which is guranteed to be called from the main thread.
+#
+# In the context of Rokoko Studio Live it is a central component, owning the listener thread and being
+# the listeners event interface. Receiving events for example to control the player and sending around
+# status and.update events. The viewport updates during playback are also done here.
 import sys
 import c4d
 from rokoko_ids import *
@@ -17,7 +26,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         self._init = 1
         bcConnections = GetPrefsContainer(ID_BC_CONNECTIONS)
         bcConnected = GetConnectedDataSet()
-        if bcConnected is not None: # TODO Not sure how the connected dataset survives shutdown (it's deleted in PluginMessage END_ACTIVITY...
+        if bcConnected is not None: # TODO Not sure yet, how the connected dataset survives shutdown (it's deleted in PluginMessage END_ACTIVITY...)
             RemoveConnectedDataSet()
         if len(bcConnections) > 0:
             for id, bcConnection in bcConnections:
@@ -26,6 +35,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
                 SetConnectedDataSet(bcConnection)
                 g_thdListener.Connect()
                 break
+
 
     def FinishAutoConnect(self):
         global g_forceUpdate
@@ -56,6 +66,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             doc.SetTime(t)
         c4d.DrawViews(c4d.DRAWFLAGS_ONLY_ACTIVE_VIEW | c4d.DRAWFLAGS_NO_THREAD)
 
+
     def CoreMessageConnect(self, bc):
         if GetConnectedDataSet() is not None:
             return True
@@ -63,9 +74,11 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         SetConnectedDataSet(GetPrefsContainer(ID_BC_CONNECTIONS)[idConnection])
         g_thdListener.Connect()
 
+
     def CoreMessageDisconnect(self):
         g_thdListener.Disconnect()
         RemoveConnectedDataSet()
+
 
     def CoreMessageStartListening(self):
         c4d.CallCommand(12002) # Stop
@@ -79,8 +92,10 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             doc.SetTime(c4d.BaseTime(0.0))
         g_thdListener.StartReception()
 
+
     def CoreMessagePauseListening(self):
         g_thdListener.PauseReception()
+
 
     def CoreMessageStopListening(self):
         doc = c4d.documents.GetActiveDocument()
@@ -93,11 +108,13 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         if bcConnected is None:
             g_thdListener.DisconnectNoConnection()
 
+
     def CoreMessageClearLiveBuffer(self):
         if GetPref(ID_DLGMNGR_PLAYER_ANIMATE_DOCUMENT):
             doc = c4d.documents.GetActiveDocument()
             doc.SetTime(c4d.BaseTime(0.0))
         g_thdListener.FlushBuffers()
+
 
     def CoreMessagePlay(self, bc):
         c4d.CallCommand(12002) # Stop
@@ -114,6 +131,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         for tag in tagsLive:
             tag.GetDataInstance()[ID_TAG_EXECUTE_MODE] = 1 # avoid SetParameter
 
+
     def CoreMessagePause(self, bc):
         if g_thdListener._play:
             g_thdListener._play = False
@@ -122,6 +140,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         idxFrame = GetCoreMessageParam23(bc, id=c4d.BFM_CORE_PAR2)
         g_thdListener.DispatchFrame(idxFrame)
         c4d.SpecialEventAdd(PLUGIN_ID_COREMESSAGE_MANAGER, CM_SUBID_MANAGER_PLAYBACK_STATUS_CHANGE)
+
 
     def CoreMessageStop(self):
         if g_thdListener._play:
@@ -136,9 +155,11 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             tag[ID_TAG_EXECUTE_MODE] = 0
             tag.SetDirty(c4d.DIRTYFLAGS_DESCRIPTION)
 
+
     def CoreMessageConnectionStatusChange(self):
         if self._init == 1:
             self.FinishAutoConnect()
+
 
     def CoreMessageLiveDataChange(self):
         bcConnected = GetConnectedDataSet()
@@ -147,6 +168,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             tag.Message(PLUGIN_ID_MSG_DATA_CHANGE)
         c4d.SpecialEventAdd(PLUGIN_ID_COREMESSAGE_MANAGER, CM_SUBID_MANAGER_UPDATE_TAG_PARAMS)
         c4d.EventAdd()
+
 
     def CoreMessageEMsgChange(self):
         docCurrent = c4d.documents.GetActiveDocument()
@@ -162,6 +184,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         for tag in tags:
             tag.Message(c4d.MSG_MENUPREPARE)
         g_forceUpdate = False
+
 
     def CoreMessage(self, id, bc):
         if self._init == 0:
