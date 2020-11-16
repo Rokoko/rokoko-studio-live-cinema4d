@@ -279,13 +279,9 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         # Several reasons could cause a need for a reinitialization, just a few examples:
         # - Tags may not have connected their data sets, yet.
         # - Connection status may have changed while document was in background.
-
-        #global g_forceUpdate
-        #g_forceUpdate = True
         tags = GetTagList()
         for tag in tags:
             tag.Message(c4d.MSG_MENUPREPARE)
-        #g_forceUpdate = False
 
 
     # CoreMessage() is the main function of a MessageData plugin.

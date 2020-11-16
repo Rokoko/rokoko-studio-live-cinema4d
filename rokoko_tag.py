@@ -8,7 +8,6 @@ from rokoko_listener import *
 from rokoko_dialog_save_recording import *
 
 g_thdListener = GetListenerThread() # owned by rokoko_listener
-#g_forceUpdate = False
 g_studioTPose = {}
 def TagSetGlobalStudioTPose(tPose):
     global g_studioTPose
@@ -919,7 +918,7 @@ class TagDataRokoko(c4d.plugins.TagData):
             rigTypeConfigured = tag.GetDataInstance().GetInt32(ID_TAG_RIG_TYPE)
             dataSetConfigured = tag.GetDataInstance().GetInt32(ID_TAG_DATA_SET)
             if self._lastObj == None or not self._lastObj.IsAlive() or self._lastObj != obj or \
-               self._lastRigType != rigTypeConfigured or self._lastDataSet != dataSetConfigured: # or g_forceUpdate:
+               self._lastRigType != rigTypeConfigured or self._lastDataSet != dataSetConfigured:
                 self._iconsValid = False
             if not self._iconsValid:
                 rigTypeOptions = DetermineRigTypeOptions(obj)
