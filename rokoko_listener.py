@@ -560,7 +560,7 @@ class ThreadListener(c4d.threading.C4DThread):
                 self._lockFrameCounter.acquire()
                 self._frameNumberDispatch += playbackRate
                 self._lockFrameCounter.release()
-            self.DispatchFrame()
+                self.DispatchFrame()
 
     _funcMain = MainConnected
 
