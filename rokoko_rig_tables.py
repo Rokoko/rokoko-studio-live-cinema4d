@@ -1,3 +1,5 @@
+# These tables hold the strings for automatic rig and face morph detection.
+
 #   nameStudio             : (nameDisplay,                       ,type,[namesMain],                              [nameAttrNeeded],    [nameAttrForbidden],      [nameSideInclude], [nameSideExclude])
 STUDIO_NAMES_TO_GUESS = {
     'hip'                  : (0,  'Hips'                         , 1,  [['hip'], ['pelvis']],                    [],                  [],                       [],                []                ),
