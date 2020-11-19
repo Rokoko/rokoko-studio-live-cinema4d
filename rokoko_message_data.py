@@ -287,7 +287,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
     # CoreMessage() is the main function of a MessageData plugin.
     # In context of the main thread all kinds of events are received here.
     def CoreMessage(self, id, bc):
-        # If no done so already, initate auto connect (happens only once during startup)
+        # If not done so already, initate auto connect (happens only once during startup)
         if self._init == 0:
             self.StartAutoConnect()
 
