@@ -40,7 +40,7 @@ class DialogEditDataSet(c4d.gui.GeDialog):
                 # Row 2
                 self.AddStaticText(0, c4d.BFH_LEFT, initw=0, name='File:')
                 if self.GroupBegin(0, c4d.BFH_SCALEFIT | c4d.BFV_TOP, cols=2): # filename
-                    self.AddEditText(ID_DLGEDITDATASET_FILENAME, c4d.BFH_SCALEFIT)
+                    self.AddEditText(ID_DLGEDITDATASET_FILENAME, c4d.BFH_SCALEFIT, initw=600)
                     self.AddButton(ID_DLGEDITDATASET_CHOOSE_FILE, c4d.BFH_RIGHT, initw=30, name='...')
                 self.GroupEnd()  # filename
             self.GroupEnd()  # parameters
@@ -53,7 +53,14 @@ class DialogEditDataSet(c4d.gui.GeDialog):
     # Called by C4D to initialize widget values.
     def InitValues(self):
         self.SetString(ID_DLGEDITDATASET_NAME, self._bcDataSet[ID_BC_DATASET_NAME])
-        self.SetString(ID_DLGEDITDATASET_FILENAME, self._bcDataSet[ID_BC_DATASET_FILENAME])
+        filename = self._bcDataSet[ID_BC_DATASET_FILENAME]
+        if self._bcDataSet[ID_BC_DATASET_IS_LOCAL] and filename[0] == '.' or os.sep not in filename:
+            pathDoc = c4d.documents.GetActiveDocument().GetDocumentPath()
+            if filename[0] == '.':
+                filename = filename[2:]
+            filename = filename.replace('\\', os.sep)
+            filename = os.path.join(pathDoc, filename)
+        self.SetString(ID_DLGEDITDATASET_FILENAME, filename)
         return True
 
 
@@ -79,6 +86,7 @@ class DialogEditDataSet(c4d.gui.GeDialog):
             # Correct data set's ID
             idDataSetNew = MyHash(self._bcDataSet[ID_BC_DATASET_NAME] + self._bcDataSet[ID_BC_DATASET_FILENAME] + str(self._bcDataSet[ID_BC_DATASET_IS_LOCAL]))
             self._bcDataSet.SetId(idDataSetNew)
+
             # Successfully leave the dialog
             self._result = True
             self.Close()

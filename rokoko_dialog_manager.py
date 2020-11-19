@@ -1006,7 +1006,9 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
 
     def AnalyzeFile(self, filename, local, nameDataSet=None):
-        pathDocument = c4d.documents.GetActiveDocument().GetDocumentPath()
+        if not os.path.exists(filename):
+            print('ERROR: Clip not found: {0}'.format(filename))
+            return None
         dataLZ4 = None
         with open(filename, mode='rb') as f:
             dataLZ4 = f.read()
@@ -1019,6 +1021,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             nameDataSet = filename[filename.rfind(os.sep)+1:]
             if nameDataSet[-4:] == '.rec':
                 nameDataSet = nameDataSet[:-4]
+        pathDocument = c4d.documents.GetActiveDocument().GetDocumentPath()
         if local and pathDocument is not None and len(pathDocument) > 1:
             filename = filename.replace(pathDocument, '.')
         bcDataSet = BaseContainerDataSet(nameDataSet, filename, isLocal=local)
@@ -1026,7 +1029,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         return bcDataSet
 
     def AnalyzeDataSet(self, bcDataSet):
-        return self.AnalyzeFile(bcDataSet[20], bcDataSet[21], bcDataSet[0])
+        return self.AnalyzeFile(bcDataSet[ID_BC_DATASET_FILENAME], bcDataSet[ID_BC_DATASET_IS_LOCAL], bcDataSet[ID_BC_DATASET_NAME])
 
     def AddDataSet(self, local, folder=False):
         filenames = []
@@ -1045,10 +1048,10 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             filenames.append(filename)
         for idxFilename, filename in enumerate(filenames):
             bcDataSet = self.AnalyzeFile(filename, local)
-            if local:
-                AddLocalDataSetBC(bcDataSet)
-            else:
-                AddGlobalDataSetBC(bcDataSet)
+            if bcDataSet is None:
+                print('ERROR: Add data set: File not found: {0}'.format(filename))
+                continue
+            AddDataSetBC(bcDataSet)
         for tag in self._tags:
             tag.Message(c4d.MSG_MENUPREPARE)
         self.UpdateLayoutGroupDataSet(local)
@@ -1073,7 +1076,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             RemoveLocalDataSet(id)
         else:
             RemoveGlobalDataSet(id)
-        bcDataSets.SetContainer(bcDataSetNew.GetId(), bcDataSetNew.GetClone(c4d.COPYFLAGS_NONE))
+        AddDataSetBC(bcDataSetNew)
         for tag in self._tags:
             tag.Message(c4d.MSG_MENUPREPARE)
         self.UpdateLayoutGroupDataSet(local)
