@@ -525,7 +525,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
 
     # Creates a "T-Pose dictionary".
     # Same as in tag... :(
-    # For all joints referenced in tag's mapping table,
+    # For all joints set in tag's mapping table,
     # store object reference, object name and T-Pose matrices (normal and pretransformed).
     # Entries are referred to by their Studio names.
     def PrepareTPosePerTag(self, tag):
@@ -616,7 +616,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
 
         ### Rotation
 
-        # Iterate all objects of the rig (wel, only those assigned in tag's mapping table)
+        # Iterate all objects of the rig (well, only those assigned in tag's mapping table)
         for nameInStudio, (obj, _, nameInRig, mRotOffsetRef) in tPose.items():
             # Get Studio rotation and convert into C4D transformation matrix
             dataBodyPart = dataBody[nameInStudio]
