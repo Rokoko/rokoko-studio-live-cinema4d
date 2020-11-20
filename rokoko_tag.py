@@ -63,6 +63,7 @@ class TagDataRokoko(c4d.plugins.TagData):
     # - GetDDescription()
     # - GetDEnabling()
     # - SetDParameter()
+    # - Message()
     # - Execute()
     # - CopyTo()
 
