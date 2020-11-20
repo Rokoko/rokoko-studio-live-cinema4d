@@ -15,6 +15,7 @@
 import os, socket, json, time
 from threading import Condition
 import c4d
+# Import lz4 module for the correct platform
 currentOS = c4d.GeGetCurrentOS()
 if currentOS == c4d.OPERATINGSYSTEM_WIN:
     import packages.win.lz4.frame as lz4f
