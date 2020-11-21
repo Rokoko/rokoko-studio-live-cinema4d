@@ -202,13 +202,14 @@ class TagDataRokoko(c4d.plugins.TagData):
             bcMenu[2] = '' # separator
 
         # Add data sets from project clip library (if any and suitable)
+        addSeparator = False
         bcDataSetsLocal = GetLocalDataSets()
         for id, bcDataSet in bcDataSetsLocal:
             self._dataSets[bcDataSet.GetId()] = '' # store index in dict
             self.DataSetMenuContainerAdd(rigType, bcDataSet, bcMenu)
-
+            addSeparator = True
         # Add another separator only, if there were project data sets added
-        if len(bcMenu) > 2:
+        if addSeparator:
             bcMenu[3] = '' # separator
 
         # Add data sets from global clip library (if any and suitable)
