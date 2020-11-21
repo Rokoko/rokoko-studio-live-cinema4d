@@ -639,6 +639,7 @@ class ThreadListener(c4d.threading.C4DThread):
 
 
     # Wait for and receive a motion data frame from the live connection.
+    _flagTimeOut = False # True if timeout has occurred.
     def ReceiveFrame(self, force=False):
         if self._sock is None:
             return False, False # error
@@ -646,11 +647,14 @@ class ThreadListener(c4d.threading.C4DThread):
         # Wait for a frame, bail out on errors
         try:
             udpData = self._sock.recv(1024 * 64)
+            self._flagTimeOut = False
         except socket.timeout:
-            # In case of timeout announce change of live data
-            ConnectedDataSetStreamLost()
-            self._dataExample = None
-            c4d.SpecialEventAdd(PLUGIN_ID_COREMESSAGE_CONNECTION, CM_SUBID_CONNECTION_LIVE_DATA_CHANGE)
+            # In case of timeout announce change of live data, once
+            if not self._flagTimeOut:
+                ConnectedDataSetStreamLost()
+                self._dataExample = None
+                c4d.SpecialEventAdd(PLUGIN_ID_COREMESSAGE_CONNECTION, CM_SUBID_CONNECTION_LIVE_DATA_CHANGE)
+                self._flagTimeOut = True
             return True, False # success, no new data
         except:
             return False, False # error
