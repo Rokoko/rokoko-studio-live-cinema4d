@@ -16,7 +16,7 @@ class DialogEditDataSet(c4d.gui.GeDialog):
         if bcDataSet is None:
             self._bcDataSet = BaseContainerDataSet('New Clip', 'new clip.rec', isLocal=local)
         else:
-            self._bcDataSet = bcDataSet
+            self._bcDataSet = bcDataSet.GetClone(c4d.COPYFLAGS_NONE)
         self._result = False
         c4d.gui.GeDialog.__init__(self)
 

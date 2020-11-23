@@ -600,6 +600,15 @@ def AddDataSetBC(bcDataSet):
         AddGlobalDataSetBC(bcDataSet)
 
 
+# Remove the provided data set from either global or project's clip library.
+def RemoveDataSetBC(bcDataSet):
+    idDataSet = bcDataSet.GetId()
+    if bcDataSet[ID_BC_DATASET_IS_LOCAL]:
+        RemoveLocalDataSet(idDataSet)
+    else:
+        RemoveGlobalDataSet(idDataSet)
+
+
 # Stores a copy of a connection data set as "the connected data set" in preferences.
 # Upon connecting to Rokoko Studio a copy of the "active" connection data set
 # is stored in a special place in preferences.

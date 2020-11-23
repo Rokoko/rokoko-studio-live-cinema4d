@@ -20,7 +20,7 @@ class DialogEditConnection(c4d.gui.GeDialog):
         if bcConnection is None:
             self._bcConnection = BaseContainerConnection('New Connection')
         else:
-            self._bcConnection = bcConnection
+            self._bcConnection = bcConnection.GetClone(c4d.COPYFLAGS_NONE)
         self._result = False
         c4d.gui.GeDialog.__init__(self)
 
