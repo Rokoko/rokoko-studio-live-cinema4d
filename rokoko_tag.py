@@ -475,6 +475,12 @@ class TagDataRokoko(c4d.plugins.TagData):
             return False
         if not GetDDescriptionCreateString(tag, description, singleId, ID_TAG_DUMMY, '', ID_TAG_GROUP_MAPPING_ACTOR, scaleH=True): # TODO WTF?!?! Without scaling the button above is only half active!!!
             return False
+        # Row 3
+        if tag[ID_TAG_ACTOR_HIP_HEIGHT] == 0.0:
+            if not GetDDescriptionCreateGroup(tag, description, singleId, ID_TAG_GROUP_MAPPING_ACTOR_HIP_HEIGHT_WARNING, '', ID_TAG_GROUP_MAPPING, numColumns=1, defaultOpen=True):
+                return False
+            if not GetDDescriptionCreateString(tag, description, singleId, ID_TAG_HIP_HEIGHT_WARNING, 'Hip Height is zero, character will be locked in place.', ID_TAG_GROUP_MAPPING_ACTOR_HIP_HEIGHT_WARNING):
+                return False
 
         # Create groups for different body parts in mapping table
         if not GetDDescriptionCreateGroup(tag, description, singleId, ID_TAG_GROUP_MAPPING_ACTOR_SUIT, 'Smartsuit Pro', ID_TAG_GROUP_MAPPING, numColumns=1, defaultOpen=True):
@@ -953,7 +959,7 @@ class TagDataRokoko(c4d.plugins.TagData):
             # In Execute() we need the T-Pose in "pretransformed" form
             # It's a bit hard to see, with the entire calculation ripped apart into
             # this preparation step and the step in Execute().
-            # Maybe also consider lokk into the code of the Blender plugin, where it's implemented in one function:
+            # Maybe also consider look into the code of the Blender plugin, where it's implemented in one function:
             # https://github.com/Rokoko/rokoko-studio-live-blender/blob/85f0569cc08fdee405f6c17bcb4e9c52804e43fa/core/animations.py#L88-L216
             #
             # Both multiplications have their counterpart in Execute()
