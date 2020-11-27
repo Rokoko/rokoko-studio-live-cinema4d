@@ -525,14 +525,19 @@ class DialogRokokoManager(c4d.gui.GeDialog):
                 self.GroupEnd() # Scroll tag rows
             self.GroupEnd() # Tags
 
-            if self.GroupBegin(0, flags=c4d.BFH_SCALEFIT | c4d.BFV_BOTTOM, title='', cols=6): # Bottom row
+            if self.GroupBegin(0, flags=c4d.BFH_SCALEFIT | c4d.BFV_BOTTOM, title='', cols=8): # Bottom row
                 self.GroupBorderSpace(10, 0, 0, 0)
 
                 # Project scale
                 self.AddStaticText(0, c4d.BFH_LEFT, initw=0, name='Project Scale')
                 self.AddEditNumberArrows(ID_DLGMNGR_PROJECT_SCALE, c4d.BFH_LEFT, initw=60)
 
-                self.AddStaticText(0, c4d.BFH_SCALEFIT, initw=30, name='') # spacer
+                self.AddStaticText(0, c4d.BFH_SCALEFIT, initw=10, name='') # spacer
+
+                # Assign unassigned tags to live connection
+                self.AddButton(ID_DLGMNGR_ASSIGN_UNASSIGNED_TAGS, c4d.BFH_RIGHT, initw=150, inith=0, name='Unassigned to Live')
+
+                self.AddStaticText(0, c4d.BFH_RIGHT, initw=10, name='') # spacer
 
                 # Select buttons
                 self.AddButton(ID_DLGMNGR_SELECT_ALL_TAGS, c4d.BFH_RIGHT, initw=150, inith=0, name='Select All')
@@ -757,6 +762,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         live = g_thdListener._receive
         allowWhileNotLive = not live and (self._tags is not None and len(self._tags) > 0)
         isConnected = IsConnected()
+        tagsExist = self._tags is not None
 
         # Set label of "Start/Stop Player" button
         if live:
@@ -776,7 +782,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         # Disable tag parameters of tags involved in playback
         tagsLive = g_thdListener.GetTagConsumers()
         anyLiveDataSet = False # Is live connection involved
-        if self._tags is not None:
+        if tagsExist:
             # Iterate all tags
             idConnected = GetConnectedDataSetId()
             for idxTag, tag in enumerate(self._tags):
@@ -803,6 +809,9 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         # Connections "+" popup menu button
         # Currently not in GUI, always exactly one connection
         self.Enable(ID_DLGMNGR_CONNECTION_POPUP, not live)
+
+        # Assign unassigned tags to live connection
+        self.Enable(ID_DLGMNGR_ASSIGN_UNASSIGNED_TAGS, isConnected and not live and tagsExist and len(self._tags) > 0)
 
         # Select buttons
         self.Enable(ID_DLGMNGR_SELECT_ALL_TAGS, allowWhileNotLive)
@@ -979,12 +988,10 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
     # Called by C4D to send a message to the dialog.
     def Message(self, msg, result):
-        # Decode message (currently only interested in BFM_ACTION from the sliders)
+        # Decode message (currently only interested in BFM_ACTION from scrub bar)
         idMsg = msg.GetId()
-        if idMsg != c4d.BFM_ACTION:
-            return c4d.gui.GeDialog.Message(self, msg, result) # pass message on to parenting classes
-
-        self.MessageBfmAction(msg)
+        if idMsg == c4d.BFM_ACTION:
+            self.MessageBfmAction(msg)
 
         return c4d.gui.GeDialog.Message(self, msg, result) # pass message on to parenting classes
 
@@ -2216,6 +2223,70 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         c4d.EventAdd()
 
 
+    # User pressed "Unassigned to Live" button on "Player" tab.
+    def CommandAssignUnassignedTags(self):
+        bcConnected = GetConnectedDataSet()
+        if bcConnected is None:
+            return
+        idConnected = bcConnected.GetId()
+
+        # Prepare a dict to store rig type bits referenced by entity names.
+        # The dict contains all actors and props.
+        # No issue, if actors and props have identical names (reason for storing bit mask).
+        assigned = {}
+        bcActors = bcConnected.GetContainerInstance(ID_BC_DATASET_ACTORS)
+        for idxActor, bcActor in bcActors:
+            nameActor = bcActor[ID_BC_ENTITY_NAME].lower()
+            assigned[nameActor] = 0
+        bcProps = bcConnected.GetContainerInstance(ID_BC_DATASET_PROPS)
+        for idxProp, bcProp in bcProps:
+            nameProp = bcProp[ID_BC_ENTITY_NAME].lower()
+            assigned[nameProp] = 0
+
+        # Iterate all tags in current scene
+        for idxTag, tag in enumerate(self._tags):
+            if not tag.IsAlive():
+                continue
+
+            # Skip tags with data assignment
+            if tag[ID_TAG_DATA_SET] != 0:
+                continue
+
+            # Skip unassigned tags (shouldn't happen actually)
+            obj = tag.GetObject()
+            if obj is None:
+                continue
+
+            # Assign live connection to tag
+            #print(tag[ID_TAG_DATA_SET], idConnected, type(idConnected))
+            # TODO: Why is SetParametter not possible, here???
+            #tag[ID_TAG_DATA_SET] = idConnected # -> error
+            #tag.SetParameter(ID_TAG_DATA_SET, idConnected, c4d.DESCFLAGS_SET_NONE) # -> nothing happens
+            tag.GetDataInstance().SetInt32(ID_TAG_DATA_SET, idConnected)
+
+            # Iterate all entities available in data
+            rigType =  tag[ID_TAG_RIG_TYPE]
+            idEntitiesBc = RigTypeToEntitiesBcId(rigType)
+            bcEntities = bcConnected.GetContainerInstance(idEntitiesBc)
+            for idxEntity, bcEntity in bcEntities:
+                name = bcEntity[ID_BC_ENTITY_NAME].lower()
+
+                # If neither name matches and the entity has been assigned before, skip to next
+                if name not in tag.GetName().lower() and name not in obj.GetName().lower() and \
+                   (assigned[name] & rigType):
+                    continue
+
+                # Assign entity to tag
+                tag[ID_TAG_ACTORS] = idxEntity
+
+                # Entity has been assigned and will only be assigned again for name matches
+                assigned[name] |= rigType
+                break
+
+        c4d.EventAdd()
+
+        #self.InitValues()
+
     # User changed project scale,
     # simply save new project scale in preferences.
     def CommandProjectScale(self):
@@ -2685,6 +2756,9 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             self.CommandTagSelectAll(select=False)
         elif id == ID_DLGMNGR_INVERT_SELECTION:
             self.CommandTagInvertSelection()
+        # Assign unassigned tags to live connection
+        elif id == ID_DLGMNGR_ASSIGN_UNASSIGNED_TAGS:
+            self.CommandAssignUnassignedTags()
         # Project scale
         elif id == ID_DLGMNGR_PROJECT_SCALE:
             self.CommandProjectScale()
