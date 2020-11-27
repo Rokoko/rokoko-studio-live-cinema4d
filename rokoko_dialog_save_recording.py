@@ -44,6 +44,7 @@ def DlgSaveDestroyGlobals():
 class DialogSaveRecording(c4d.gui.GeDialog):
     _dlgParent = None # reference to parenting Manager dialog, used to trigger updates and re-enable it, when closing
     _bakingOnly = False # when opened from a tag, the dialog will hide the save options and only allows baking of an existing clip
+    _clipStored = False # Set to True as soon as the user saves or bakes at least a part of the clip
     _tags = None # list of tags involved in the baking process
     _idxFrameLast = 0 # last valid frame index for the sliders
 
@@ -298,6 +299,13 @@ class DialogSaveRecording(c4d.gui.GeDialog):
     # Called by C4D when the dialog is about to be closed in whatever way.
     # Returning True would deny the "close request" and the dialog stayed open.
     def AskClose(self):
+        # If the user has not at least saved or baked a part of the recording, show a warning.
+        if not self._clipStored and not self._bakingOnly:
+            result = c4d.gui.MessageDialog('Recording has neither been saved nor baked.\nAre you sure, you want to discard the recording and close the dialog?', c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_YESNO)
+            if result == c4d.GEMB_R_NO:
+                # User decided to keep Save Recording dialog open
+                return True # Dialog will NOT be closed
+
         # In case the dialog was opened from a tag...
         if self._bakingOnly:
             # Reset execute flag for all involved tags
@@ -1025,6 +1033,9 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         # Reset C4D's status bar
         c4d.StatusClear()
 
+        # Do no longer show a warning, if dialog gets closed and thus recording gets discarded
+        self._clipStored = True
+
         # Success requester
         if createTake:
             c4d.gui.MessageDialog('Successfully baked keyframes in Take "{0}".'.format(nameDataSet))
@@ -1093,6 +1104,9 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                 tag[ID_TAG_DATA_SET] = idDataSetNew
 
         c4d.EventAdd()
+
+        # Do no longer show a warning, if dialog gets closed and thus recording gets discarded
+        self._clipStored = True
 
         # Success requester
         if local:
