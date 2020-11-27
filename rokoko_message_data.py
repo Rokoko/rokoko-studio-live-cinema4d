@@ -235,6 +235,8 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             tag[ID_TAG_EXECUTE_MODE] = 0
             tag.SetDirty(c4d.DIRTYFLAGS_DESCRIPTION)
 
+        c4d.EventAdd()
+
 
     # React to "connection status change" message
     # Actually a message received by the Manager dialog to update connection status.
