@@ -582,10 +582,18 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
                 # Row "Active Tags"
                 # TODO: This needs to be a horizontal scroll group
-                if self.GroupBegin(0, flags=c4d.BFH_SCALEFIT | c4d.BFV_TOP, title='', cols=2):
-                    self.AddStaticText(ID_DLGMNGR_PLAYER_ACTIVE_TAGS_LABEL, c4d.BFH_LEFT, initw=0, name='Active Tags:')
-                    self.AddStaticText(ID_DLGMNGR_PLAYER_ACTIVE_TAGS, c4d.BFH_SCALEFIT, initw=0, name='None')
-                self.GroupEnd()
+
+
+                scrollFlags = c4d.SCROLLGROUP_HORIZ | c4d.SCROLLGROUP_AUTOHORIZ | c4d.SCROLLGROUP_NOVGAP
+                if self.ScrollGroupBegin(0, c4d.BFH_SCALEFIT | c4d.BFV_TOP, scrollFlags, initw=0, inith=0): # Scroll active tags
+                    if self.GroupBegin(0, flags=c4d.BFH_SCALEFIT | c4d.BFV_TOP, title='', cols=2): # Active tags
+                        # Label
+                        self.AddStaticText(ID_DLGMNGR_PLAYER_ACTIVE_TAGS_LABEL, c4d.BFH_LEFT, initw=0, name='Active Tags:')
+
+                        # Actual tag names will be listed in here
+                        self.AddStaticText(ID_DLGMNGR_PLAYER_ACTIVE_TAGS, c4d.BFH_SCALEFIT, initw=0, name='None')
+                    self.GroupEnd() # Active tags
+                self.GroupEnd() # Scroll active tags
 
                 if self.GroupBegin(0, flags=c4d.BFH_SCALEFIT | c4d.BFV_TOP, title='', cols=5): # Scrub bar and player buttons
                     # Scrub bar
