@@ -335,4 +335,4 @@ ID_BC_PRESET_NAME = 1000
 ID_BC_PRESET_TYPE = 0  # 0: rig, 1: face
 
 
-LINK_CONNECTION_INSTRUCTIONS = 'https://... TODO'
+LINK_CONNECTION_INSTRUCTIONS = 'https://github.com/Rokoko/rokoko-studio-live-cinema4d/wiki/Rokoko-Studio-Live-Plugin-for-Cinema#what-if-above-procedure-failed'
