@@ -12,6 +12,8 @@ sys.path.insert(0, basedir)
 if DEVELOPMENT == True:
     # Not nice, but during development the reload is needed for Reload Python Plugins to work properly (i.e. use changed sources)
     for module in sys.modules.values():
+        if module is None:
+            continue
         end = len('rokoko_')
         if len(module.__name__) < end:
             end = len(module.__name__)
@@ -28,6 +30,23 @@ from rokoko_message_data import *
 from rokoko_commands import *
 from rokoko_tag import *
 from rokoko_prefs import *
+
+# Import lz4 module for the correct platform
+# Here it's only done for a test on startup to warn the user.
+__USE_LZ4__ = True
+try:
+    currentOS = c4d.GeGetCurrentOS()
+    if currentOS == c4d.OPERATINGSYSTEM_WIN:
+        import packages.win.lz4.frame as lz4f
+    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+        import packages.mac.lz4.frame as lz4f
+except:
+    __USE_LZ4__ = False
+
+
+COMMAND_TEST_UDP_PAKET_SIZE = 'sysctl -h net.inet.udp.maxdgram'
+COMMAND_SET_UDP_PAKET_SIZE = 'sudo sysctl -w net.inet.udp.maxdgram=65535'
+COMMAND_RESULT_TOKEN = 'net.inet.udp.maxdgram: '
 
 
 # g_studioTPose dictionary contains Rokoko Studio's T-Pose.
@@ -56,6 +75,76 @@ def LoadStudioTPose():
         # Allow submodules (namely Rokoko tag and Svae Recording dialog) to access this global resource
         TagSetGlobalStudioTPose(g_studioTPose)
         DlgSaveSetGlobalStudioTPose(g_studioTPose)
+
+
+# Open a warning requester if no LZ module available.
+def WarnNoLZ4():
+    message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
+    message += 'Compression module not avalaible!\n'
+    message += 'Please set up custom connection in Rokoko Studio.\n'
+    message += 'See here: {0}\n'.format(LINK_CONNECTION_INSTRUCTIONS)
+    message += 'Ok: Open instructions in web browser.\n'
+
+    result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
+    if result == c4d.GEMB_R_OK:
+        c4d.storage.GeExecuteFile(LINK_CONNECTION_INSTRUCTIONS)
+
+
+# Open a warning requester if UDP paket size smaller than desired.
+def WarnSmallUDPPaketSize():
+    message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
+    message += 'Low UDP paket size set in MacOS and no compression module avalaible!\n'
+    message += 'Please call the following command in a terminal.\n'
+    message += '    {0}\n'.format(COMMAND_SET_UDP_PAKET_SIZE)
+    message += 'Ok: Copy command to clipboard.\n'
+
+    result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
+    if result == c4d.GEMB_R_OK:
+        c4d.CopyStringToClipboard(COMMAND_SET_UDP_PAKET_SIZE)
+
+
+# Execute a command in a shell and return its output.
+def ExecShellCommand(command):
+    try:
+        proc = subprocess.Popen(command, shell=True, cwd=None,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    except:
+        pass # deliberately surpressing any exception
+    if proc is None or proc.poll() is not None:
+        c4d.gui.MessageDialog('Rokoko Studio Live:\nFAILED to execute command!\n    {0}\n'.format(command), type=c4d.GEMB_ICONEXCLAMATION)
+        return
+    stdout, stderr = proc.communicate()
+    return str(stdout), str(stderr)
+
+
+# Test UDP paket size configured in MacOS and warn accordingly
+def TestUDPPaketSize():
+    # Only for MacOS
+    currentOS = c4d.GeGetCurrentOS()
+    if currentOS != c4d.OPERATINGSYSTEM_OSX:
+        return
+
+    # Try to find out current UDP paket size
+    stdout, stderr = ExecShellCommand(COMMAND_TEST_UDP_PAKET_SIZE)
+
+    print(stdout)
+    print(stderr)
+
+    # Evaluate result
+    result = ''
+    if COMMAND_RESULT_TOKEN in stdout:
+        result = stdout.replace(COMMAND_RESULT_TOKEN, '').strip()
+    if COMMAND_RESULT_TOKEN in stderr:
+        result = stderr.replace(COMMAND_RESULT_TOKEN, '').strip()
+
+    if len(result) < 3:
+        return
+
+    paketSize = int(result)
+
+    # If smaller than desired, open a warning requester
+    if paketSize < 65535:
+        WarnSmallUDPPaketSize()
 
 
 # PluginMessage() will be called by Cinema 4D to communicate status changes.
@@ -202,4 +291,8 @@ def RegisterRokokoStudioLive():
 
 # EXECUTION STARTS HERE
 if __name__ == "__main__":
+    if not __USE_LZ4__:
+        WarnNoLZ4()
+        TestUDPPaketSize()
+
     RegisterRokokoStudioLive()

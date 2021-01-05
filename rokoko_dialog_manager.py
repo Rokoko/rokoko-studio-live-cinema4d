@@ -12,11 +12,15 @@ import os, shutil, json
 import urllib.request
 import c4d
 # Import lz4 module for the correct platform
-currentOS = c4d.GeGetCurrentOS()
-if currentOS == c4d.OPERATINGSYSTEM_WIN:
-    import packages.win.lz4.frame as lz4f
-elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-    import packages.mac.lz4.frame as lz4f
+__USE_LZ4__ = True
+try:
+    currentOS = c4d.GeGetCurrentOS()
+    if currentOS == c4d.OPERATINGSYSTEM_WIN:
+        import packages.win.lz4.frame as lz4f
+    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+        import packages.mac.lz4.frame as lz4f
+except:
+    __USE_LZ4__ = False
 from rokoko_ids import *
 from rokoko_utils import *
 from rokoko_listener import *
@@ -1587,7 +1591,10 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             return None
 
         # Decompress data
-        dataStudio = lz4f.decompress(dataLZ4, return_bytearray=True, return_bytes_read=False)
+        if __USE_LZ4__:
+            dataStudio = lz4f.decompress(dataLZ4, return_bytearray=True, return_bytes_read=False)
+        else:
+            dataStudio = dataLZ4
 
         # Decode JSON into dictionary
         data = json.loads(dataStudio)

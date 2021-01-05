@@ -16,11 +16,15 @@ import os, socket, json, time
 from threading import Condition
 import c4d
 # Import lz4 module for the correct platform
-currentOS = c4d.GeGetCurrentOS()
-if currentOS == c4d.OPERATINGSYSTEM_WIN:
-    import packages.win.lz4.frame as lz4f
-elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-    import packages.mac.lz4.frame as lz4f
+__USE_LZ4__ = True
+try:
+    currentOS = c4d.GeGetCurrentOS()
+    if currentOS == c4d.OPERATINGSYSTEM_WIN:
+        import packages.win.lz4.frame as lz4f
+    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+        import packages.mac.lz4.frame as lz4f
+except:
+    __USE_LZ4__ = False
 from rokoko_ids import *
 from rokoko_rig_tables import *
 from rokoko_utils import *
@@ -638,6 +642,51 @@ class ThreadListener(c4d.threading.C4DThread):
         self.FlushTagConsumers()
 
 
+    # Open a warning requester, which allows to access the connection instructions.
+    def WrongStreamWarning(self, message):
+        message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n' + message
+        message += 'See here: {0}\n'.format(LINK_CONNECTION_INSTRUCTIONS)
+        message += 'Ok: Open instructions in web browser.\n'
+        result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
+        if result == c4d.GEMB_R_OK:
+            c4d.storage.GeExecuteFile(LINK_CONNECTION_INSTRUCTIONS)
+
+
+    # Decode a received UDP frame
+    def DecodeReceivedFrame(self, udpData):
+        global g_streamWarnOnce
+
+        # Decompress the frame
+        if __USE_LZ4__:
+            try:
+                studioData = lz4f.decompress(udpData, return_bytearray=True, return_bytes_read=False)
+            except:
+                message = 'The plugin does support the compressed stream.\n'
+                message += 'Please configure Rokoko Studio to use the standard Cinema 4D connection.\n'
+                self.WrongStreamWarning(message)
+
+                # Ask listener thread to disconnect
+                c4d.SpecialEventAdd(PLUGIN_ID_COREMESSAGE_CONNECTION, CM_SUBID_CONNECTION_DISCONNECT)
+                return None
+        else:
+            studioData = udpData
+
+        # Decode JSON data
+        try:
+            data = json.loads(studioData)
+        except:
+            message = 'It looks like, we are receiving a compressed stream from Rokoko Studio,\n'
+            message += 'which is currently not supported on your system.\n'
+            message += 'Please configure Rokoko Studio to use a custom connection.\n'
+            self.WrongStreamWarning(message)
+
+            # Ask listener thread to disconnect
+            c4d.SpecialEventAdd(PLUGIN_ID_COREMESSAGE_CONNECTION, CM_SUBID_CONNECTION_DISCONNECT)
+            return None
+
+        return data
+
+
     # Wait for and receive a motion data frame from the live connection.
     _flagTimeOut = False # True if timeout has occurred.
     def ReceiveFrame(self, force=False):
@@ -661,11 +710,9 @@ class ThreadListener(c4d.threading.C4DThread):
 
         # If reception is enabled (player started)...
         if force or self._receive:
-            # Decompress the frame
-            studioData = lz4f.decompress(udpData, return_bytearray=True, return_bytes_read=False)
-
-            # Decode JSON data
-            data = json.loads(studioData)
+            data = self.DecodeReceivedFrame(udpData)
+            if data is None:
+                return False, False # success, no new data
 
             # Check if data has changed
             self.DetectDataChange(data['scene'], float(data['fps']))
@@ -690,8 +737,9 @@ class ThreadListener(c4d.threading.C4DThread):
             # we decode every 60th frame to check for data changes
             self._cntDetect = (self._cntDetect + 1) % 60
             if self._cntDetect == 0:
-                studioData = lz4f.decompress(udpData, return_bytearray=True, return_bytes_read=False)
-                data = json.loads(studioData)
+                data = self.DecodeReceivedFrame(udpData)
+                if data is None:
+                    return False, False # success, no new data
                 self.DetectDataChange(data['scene'], float(data['fps']))
         return True, True  # success, new data
 
@@ -846,7 +894,10 @@ class ThreadListener(c4d.threading.C4DThread):
         self._lockDataQueues.release()
 
         # Compress JSON data
-        dataLZ4 = lz4f.compress(dataJSON.encode('utf-8'))
+        if __USE_LZ4__:
+            dataLZ4 = lz4f.compress(dataJSON.encode('utf-8'))
+        else:
+            dataLZ4 = dataJSON
 
         # Write compressed data to file
         with open(filename, mode='wb') as f:
