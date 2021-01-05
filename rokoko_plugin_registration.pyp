@@ -93,14 +93,18 @@ def WarnNoLZ4():
 # Open a warning requester if UDP paket size smaller than desired.
 def WarnSmallUDPPaketSize():
     message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
-    message += 'Low UDP paket size set in MacOS and no compression module avalaible!\n'
+    message += 'Low UDP paket size set in MacOS!\n'
     message += 'Please call the following command in a terminal.\n'
-    message += '    {0}\n'.format(COMMAND_SET_UDP_PAKET_SIZE)
-    message += 'Ok: Copy command to clipboard.\n'
+    message += '    {0}\n\n'.format(COMMAND_SET_UDP_PAKET_SIZE)
+    message += 'Yes: Copy command to clipboard.\n'
+    message += 'No: Understood, but never show this warning again.\n'
+    message += 'Cancel: Do nothing.\n'
 
-    result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
-    if result == c4d.GEMB_R_OK:
+    result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_YESNOCANCEL)
+    if result == c4d.GEMB_R_YES:
         c4d.CopyStringToClipboard(COMMAND_SET_UDP_PAKET_SIZE)
+    elif result == c4d.GEMB_R_NO:
+        SetPref(ID_PREF_UDP_SIZE_NO_WARNING, True)
 
 
 # Execute a command in a shell and return its output.
@@ -122,6 +126,10 @@ def TestUDPPaketSize():
     # Only for MacOS
     currentOS = c4d.GeGetCurrentOS()
     if currentOS != c4d.OPERATINGSYSTEM_OSX:
+        return
+
+    # Check, if user disabled the check (by selecting "No" in a previous run)
+    if GetPref(ID_PREF_UDP_SIZE_NO_WARNING) == True:
         return
 
     # Try to find out current UDP paket size
@@ -293,6 +301,7 @@ def RegisterRokokoStudioLive():
 if __name__ == "__main__":
     if not __USE_LZ4__:
         WarnNoLZ4()
-        TestUDPPaketSize()
+
+    TestUDPPaketSize()
 
     RegisterRokokoStudioLive()
