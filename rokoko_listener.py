@@ -649,7 +649,7 @@ class ThreadListener(c4d.threading.C4DThread):
         message += 'Ok: Open instructions in web browser.\n'
         result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
         if result == c4d.GEMB_R_OK:
-            c4d.storage.GeExecuteFile(LINK_CONNECTION_INSTRUCTIONS)
+            OpenLinkInBrowser(LINK_CONNECTION_INSTRUCTIONS)
 
 
     # Decode a received UDP frame

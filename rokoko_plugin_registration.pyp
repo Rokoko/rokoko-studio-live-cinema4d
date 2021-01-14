@@ -3,7 +3,7 @@
 #
 # Additionally C4D's plugin messages (PluginMessage()) are handled here, mainly some
 # startup/shutdown logic.
-import sys, os, importlib
+import sys, os, importlib, subprocess
 import c4d
 
 DEVELOPMENT = True # Users should rather have this set to False
@@ -87,7 +87,7 @@ def WarnNoLZ4():
 
     result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
     if result == c4d.GEMB_R_OK:
-        c4d.storage.GeExecuteFile(LINK_CONNECTION_INSTRUCTIONS)
+        OpenLinkInBrowser(LINK_CONNECTION_INSTRUCTIONS)
 
 
 # Open a warning requester if UDP paket size smaller than desired.
@@ -109,9 +109,11 @@ def WarnSmallUDPPaketSize():
 
 # Execute a command in a shell and return its output.
 def ExecShellCommand(command):
+    proc = None
     try:
         proc = subprocess.Popen(command, shell=True, cwd=None,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                encoding='utf-8', text=True)
     except:
         pass # deliberately surpressing any exception
     if proc is None or proc.poll() is not None:
@@ -135,17 +137,16 @@ def TestUDPPaketSize():
     # Try to find out current UDP paket size
     stdout, stderr = ExecShellCommand(COMMAND_TEST_UDP_PAKET_SIZE)
 
-    print(stdout)
-    print(stderr)
-
     # Evaluate result
     result = ''
     if COMMAND_RESULT_TOKEN in stdout:
         result = stdout.replace(COMMAND_RESULT_TOKEN, '').strip()
-    if COMMAND_RESULT_TOKEN in stderr:
-        result = stderr.replace(COMMAND_RESULT_TOKEN, '').strip()
+    else:
+        print('ERROR: Failed to test UDP paket size: {0}'.format(result))
+        return
 
     if len(result) < 3:
+        print('ERROR: Failed to test UDP paket size: {0}'.format(result))
         return
 
     paketSize = int(result)

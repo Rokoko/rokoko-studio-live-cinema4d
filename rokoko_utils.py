@@ -1,5 +1,5 @@
 # Various utility functions.
-import time, math, hashlib, json
+import time, math, hashlib, json, webbrowser
 from ctypes import pythonapi, c_void_p, py_object
 import c4d
 # Import lz4 module for the correct platform
@@ -878,6 +878,12 @@ def RigTypeToEntitiesBcId(rigType):
     else:
         idEntitiesBc = ID_BC_DATASET_PROPS
     return idEntitiesBc
+
+
+# Open a link in an external browser.
+# GeExecuteFile() doesn't do, as it does not support # in links on Mac.
+def OpenLinkInBrowser(weblink):
+    webbrowser.open(weblink)
 
 
 # Debug tool to measure timing (very roughly)
