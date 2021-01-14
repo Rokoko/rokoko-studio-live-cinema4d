@@ -94,7 +94,7 @@ def WarnNoLZ4():
 def WarnSmallUDPPaketSize():
     message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
     message += 'Low UDP paket size set in MacOS!\n'
-    message += 'Please call the following command in a terminal.\n'
+    message += 'Please call the following command in a terminal:\n'
     message += '    {0}\n\n'.format(COMMAND_SET_UDP_PAKET_SIZE)
     message += 'Yes: Copy command to clipboard.\n'
     message += 'No: Understood, but never show this warning again.\n'
