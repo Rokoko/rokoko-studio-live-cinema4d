@@ -81,8 +81,8 @@ def LoadStudioTPose():
 def WarnNoLZ4():
     message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
     message += 'Compression module not avalaible!\n'
-    message += 'Please set up custom connection in Rokoko Studio.\n'
-    message += 'See here: {0}\n'.format(LINK_CONNECTION_INSTRUCTIONS)
+    message += 'Please set up custom connection in Rokoko Studio.\n\n'
+    message += 'See here: {0}\n\n'.format(LINK_CONNECTION_INSTRUCTIONS)
     message += 'Ok: Open instructions in web browser.\n'
 
     result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)

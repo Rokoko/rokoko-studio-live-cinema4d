@@ -645,7 +645,7 @@ class ThreadListener(c4d.threading.C4DThread):
     # Open a warning requester, which allows to access the connection instructions.
     def WrongStreamWarning(self, message):
         message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n' + message
-        message += 'See here: {0}\n'.format(LINK_CONNECTION_INSTRUCTIONS)
+        message += '\nSee here: {0}\n\n'.format(LINK_CONNECTION_INSTRUCTIONS)
         message += 'Ok: Open instructions in web browser.\n'
         result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
         if result == c4d.GEMB_R_OK:
