@@ -39,7 +39,7 @@ try:
     if currentOS == c4d.OPERATINGSYSTEM_WIN:
         import packages.win.lz4.frame as lz4f
     elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-        import packages.mac.lz4.frame as lz4f
+        import lz4.frame as lz4f
 except:
     __USE_LZ4__ = False
 
