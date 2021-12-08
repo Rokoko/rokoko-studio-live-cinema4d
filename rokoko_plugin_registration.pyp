@@ -3,22 +3,24 @@
 #
 # Additionally C4D's plugin messages (PluginMessage()) are handled here, mainly some
 # startup/shutdown logic.
-import sys, os, importlib, subprocess
+import sys, os, subprocess
 import c4d
+if c4d.GetC4DVersion() // 1000 > 22:
+    from importlib import reload
 
-DEVELOPMENT = True # Users should rather have this set to False
 basedir = __file__[:__file__.rfind(os.sep)]
 sys.path.insert(0, basedir)
-if DEVELOPMENT == True:
-    # Not nice, but during development the reload is needed for Reload Python Plugins to work properly (i.e. use changed sources)
-    for module in sys.modules.values():
+
+def ReloadRokokoModules():
+    for module in list(sys.modules.values()):
         if module is None:
             continue
         end = len('rokoko_')
         if len(module.__name__) < end:
             end = len(module.__name__)
         if module.__name__[:end] == 'rokoko_':
-            importlib.reload(module)
+            reload(module)
+
 from rokoko_ids import *
 from rokoko_rig_tables import *
 from rokoko_utils import *
@@ -174,6 +176,10 @@ def PluginMessage(id, data):
         DlgManagerDataDestroyGlobals()
         TagDestroyGlobals()
         MessageDataDestroyGlobals()
+
+        if id == c4d.C4DPL_RELOADPYTHONPLUGINS:
+            ReloadRokokoModules()
+
         return True
     return False
 
