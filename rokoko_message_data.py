@@ -97,7 +97,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
     def CoreMessageConnect(self, bc):
         if GetConnectedDataSet() is not None:
             return True
-        idConnection = GetCoreMessageParam23(bc, id=c4d.BFM_CORE_PAR2)
+        idConnection = GetCoreMessageParam(bc, id=c4d.BFM_CORE_PAR2)
         SetConnectedDataSet(GetPrefsContainer(ID_BC_CONNECTIONS)[idConnection])
         g_thdListener.Connect()
 
@@ -175,7 +175,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
         c4d.CallCommand(12002) # Stop
 
         # If requested, player resyncs with incoming live stream
-        returnToLive = GetCoreMessageParam23(bc, id=c4d.BFM_CORE_PAR2)
+        returnToLive = GetCoreMessageParam(bc, id=c4d.BFM_CORE_PAR2)
         if returnToLive == 1:
             g_thdListener.SyncFrameCounters()
 
@@ -208,7 +208,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             g_thdListener.FlushTagConsumers()
 
         # Dispatch the frame, the player was paused upon
-        idxFrame = GetCoreMessageParam23(bc, id=c4d.BFM_CORE_PAR2)
+        idxFrame = GetCoreMessageParam(bc, id=c4d.BFM_CORE_PAR2)
         g_thdListener.DispatchFrame(idxFrame)
 
         # Inform Manager dialog about changed player status
@@ -301,7 +301,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             self.CoreMessageLiveDraw()
 
         elif id == PLUGIN_ID_COREMESSAGE_CONNECTION:
-            subId = GetCoreMessageParam23(bc)
+            subId = GetCoreMessageParam(bc)
             if subId == CM_SUBID_CONNECTION_CONNECT:
                 self.CoreMessageConnect(bc)
             elif subId == CM_SUBID_CONNECTION_DISCONNECT:
@@ -312,7 +312,7 @@ class MessageDataRokoko(c4d.plugins.MessageData):
                 self.CoreMessageLiveDataChange()
 
         elif id == PLUGIN_ID_COREMESSAGE_PLAYER:
-            subId = GetCoreMessageParam23(bc)
+            subId = GetCoreMessageParam(bc)
             if subId == CM_SUBID_PLAYER_START:
                 self.CoreMessageStartListening()
             elif subId == CM_SUBID_PLAYER_PAUSE_RECEPTION:

@@ -1064,8 +1064,8 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
         if g_thdListener._receive:
             # Use frame index and length received from player
-            idxFrameCurrent = GetCoreMessageParam23(msg)
-            numFrames = GetCoreMessageParam23(msg, id=c4d.BFM_CORE_PAR2)
+            idxFrameCurrent = GetCoreMessageParam(msg)
+            numFrames = GetCoreMessageParam(msg, id=c4d.BFM_CORE_PAR2)
         else:
             # Reset scrub bar
             idxFrameCurrent = 0
@@ -1115,7 +1115,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         # Decode event message ID
         if id == PLUGIN_ID_COREMESSAGE_MANAGER:
             # Decode message sub ID (first of two event parameters)
-            subId = GetCoreMessageParam23(msg)
+            subId = GetCoreMessageParam(msg)
             if subId == CM_SUBID_MANAGER_UPDATE_TAGS:
                 self.CoreMessageUpdateTags()
             elif subId == CM_SUBID_MANAGER_UPDATE_TAG_PARAMS:
@@ -1134,7 +1134,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
         elif id == PLUGIN_ID_COREMESSAGE_CONNECTION:
             # Decode message sub ID (first of two event parameters)
-            subId = GetCoreMessageParam23(msg)
+            subId = GetCoreMessageParam(msg)
             if subId == CM_SUBID_CONNECTION_STATUS_CHANGE:
                 self.CoreMessageConnectionStatusChange()
             elif subId == CM_SUBID_CONNECTION_LIVE_DATA_CHANGE:

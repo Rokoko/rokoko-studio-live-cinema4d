@@ -62,7 +62,7 @@ def GetCoreMessageParamOld(msg, id=c4d.BFM_CORE_PAR1):
 
 
 # Depending on C4D version have a common "function pointer" to always use the correct version.
-if c4d.GetC4DVersion() // 1000 < 23:
+if c4d.GetC4DVersion() // 1000 >= 23:
     GetCoreMessageParam = GetCoreMessageParam23
 else:
     GetCoreMessageParam = GetCoreMessageParamOld
