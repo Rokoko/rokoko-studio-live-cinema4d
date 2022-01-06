@@ -2272,12 +2272,14 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             if obj is None:
                 continue
 
+            bcTag = tag.GetDataInstance()
+
             # Assign live connection to tag
             #print(tag[ID_TAG_DATA_SET], idConnected, type(idConnected))
-            # TODO: Why is SetParametter not possible, here???
+            # TODO: Why is SetParameter not possible, here???
             #tag[ID_TAG_DATA_SET] = idConnected # -> error
             #tag.SetParameter(ID_TAG_DATA_SET, idConnected, c4d.DESCFLAGS_SET_NONE) # -> nothing happens
-            tag.GetDataInstance().SetInt32(ID_TAG_DATA_SET, idConnected)
+            bcTag.SetInt32(ID_TAG_DATA_SET, idConnected)
 
             # Iterate all entities available in data
             rigType =  tag[ID_TAG_RIG_TYPE]
@@ -2292,7 +2294,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
                     continue
 
                 # Assign entity to tag
-                tag[ID_TAG_ACTORS] = idxEntity
+                bcTag.SetInt32(ID_TAG_ACTORS, idxEntity) # TODO: See comment above about failing parameter set
 
                 # Entity has been assigned and will only be assigned again for name matches
                 assigned[name] |= rigType
