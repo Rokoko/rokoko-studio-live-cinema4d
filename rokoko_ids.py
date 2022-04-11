@@ -1,17 +1,20 @@
 import c4d
 
+
 PLUGIN_NAME_COMMAND_MANAGER = 'Rokoko Studio Live'
 PLUGIN_NAME_TAG = 'Rokoko Tag'
+PLUGIN_NAME_COMMAND_INSTALL = 'Rokoko Studio Live Installer'
 
 PLUGIN_VERSION_MAJOR = 1
-PLUGIN_VERSION_MINOR = 2
-PLUGIN_VERSION_PATCH = 202101021
+PLUGIN_VERSION_MINOR = 3
+PLUGIN_VERSION_PATCH = 20220411
 PLUGIN_VERSION = '{0}.{1}.{2}'.format(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
 
 PLUGIN_ID_COMMAND_MANAGER                          = 1056094  # Main plugin ID (used to access BaseContainers, etc.)
 PLUGIN_ID_TAG                                      = 1056095
 PLUGIN_ID_MESSAGEDATA                              = 1056097
 PLUGIN_ID_PREFS                                    = 1056096
+PLUGIN_ID_COMMAND_INSTALL                          = 1056093  # TODO Andreas: Maybe rather have a new one registered
 
 PLUGIN_ID_COREMESSAGE_LIVE_DRAW                    = 1056098
 PLUGIN_ID_COREMESSAGE_PLAYER                       = 1056099
@@ -53,6 +56,7 @@ PLUGIN_ID_COMMAND_API_ICON_RECORD_START            = 1056119
 PLUGIN_ID_COMMAND_API_ICON_RECORD_STOP             = 1056118
 PLUGIN_ID_COMMAND_API_ICON_CALIBRATE_SUIT          = 1056120
 PLUGIN_ID_COMMAND_API_ICON_RESTART_SUIT            = 1056121
+
 
 RIG_TYPE_UNKNOWN          = 0x0000
 RIG_TYPE_ACTOR            = 0x0001

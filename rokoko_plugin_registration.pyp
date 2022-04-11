@@ -30,6 +30,7 @@ from rokoko_dialog_save_recording import *
 from rokoko_dialog_manager import *
 from rokoko_message_data import *
 from rokoko_commands import *
+from rokoko_command_install import *
 from rokoko_tag import *
 from rokoko_prefs import *
 
@@ -39,9 +40,12 @@ __USE_LZ4__ = True
 try:
     currentOS = c4d.GeGetCurrentOS()
     if currentOS == c4d.OPERATINGSYSTEM_WIN:
-        import packages.win.lz4.frame as lz4f
+        #import packages.win.lz4.frame as lz4f
+        import lz4.frame as lz4f
+
     elif currentOS == c4d.OPERATINGSYSTEM_OSX:
         import lz4.frame as lz4f
+
 except:
     __USE_LZ4__ = False
 
@@ -105,6 +109,7 @@ def WarnSmallUDPPaketSize():
     result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_YESNOCANCEL)
     if result == c4d.GEMB_R_YES:
         c4d.CopyStringToClipboard(COMMAND_SET_UDP_PAKET_SIZE)
+
     elif result == c4d.GEMB_R_NO:
         SetPref(ID_PREF_UDP_SIZE_NO_WARNING, True)
 
@@ -224,7 +229,7 @@ def RegisterImageAsIcon(id, filename, mirrorHorizontally=False, size=None):
 # It returns the bitmap of the Rokoko Studio Live logo for use during plugin registration.
 def RegisterIcons():
     # Icons can not be registered twice.
-    # "Reload Python Plugins" to work properly, we first need unregister all icons,
+    # For "Reload Python Plugins" to work properly, we first need unregister all icons,
     # we registered in the previous run.
     c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_ACTOR)
     c4d.gui.UnregisterIcon(PLUGIN_ID_TAG_ICON_FACE)
@@ -270,45 +275,69 @@ def RegisterRokokoStudioLive():
     bcPrefs = GetWorldPrefs()
     if bcPrefs[ID_PREF_PLUGIN_ENABLED] or bcPrefs[ID_PREF_PLUGIN_ENABLED] is None:
         # Initialize globally needed structures
-        InitBaseContainer()
         InitRokokoLogo()
         bmpIcon = RegisterIcons()
+
+        if not __USE_LZ4__:
+            currentOS = c4d.GeGetCurrentOS()
+
+            if currentOS == c4d.OPERATINGSYSTEM_WIN:
+                # On Windows we can pip install the Python LZ4 module.
+                # So if LZ4 is missing here, we register only the install command.
+                result = c4d.plugins.RegisterCommandPlugin(id=PLUGIN_ID_COMMAND_INSTALL, str=PLUGIN_NAME_COMMAND_INSTALL,
+                                                           help='Install {0}'.format(PLUGIN_NAME_COMMAND_MANAGER),
+                                                           info=0, dat=CommandDataRokokoInstall(), icon=bmpIcon)
+                if not result:
+                    print('ERROR: {0} ({1}) failed to register installer CommandData.'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION))
+
+                return # On Win we have no installation issue, so we force the user to run the install command
+
+            elif currentOS == c4d.OPERATINGSYSTEM_OSX:
+                WarnNoLZ4()
+
+            else:
+                print('ERROR: {0} ({1}) Operating system ({2}) not supported.'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION, currentOS))
+
+        TestUDPPaketSize()
+
+        # Init preferences
+        InitBaseContainer()
+
+        # Load global T-pose data (reference T-pose from Rokoko Studio)
         LoadStudioTPose()
 
         # Register plugins
         result = c4d.plugins.RegisterMessagePlugin(id=PLUGIN_ID_MESSAGEDATA, str='',
                                                    info=0, dat=MessageDataRokoko())
         if not result:
-            print('ERROR: Rokoko Studio Live ({0}) failed to register MessageData.'.format(PLUGIN_VERSION))
+            print('ERROR: {0} ({1}) failed to register MessageData.'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION))
             return
+
         result = c4d.plugins.RegisterTagPlugin(id=PLUGIN_ID_TAG, str=PLUGIN_NAME_TAG,
                                                info=c4d.TAG_EXPRESSION | c4d.TAG_VISIBLE, g=TagDataRokoko,
                                                description='Trokoko', icon=bmpIcon)
         if not result:
-            print('ERROR: Rokoko Studio Live ({0}) failed to register Tag.'.format(PLUGIN_VERSION))
+            print('ERROR: {0} ({1}) failed to register Tag.'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION))
             return
+
         result = c4d.plugins.RegisterCommandPlugin(id=PLUGIN_ID_COMMAND_MANAGER, str=PLUGIN_NAME_COMMAND_MANAGER,
                                                    help='Open {0}'.format(PLUGIN_NAME_COMMAND_MANAGER), info=0,
                                                    dat=CommandDataRokokoManager(), icon=bmpIcon)
         if not result:
-            print('ERROR: Rokoko Studio Live ({0}) failed to register Manager CommandData.'.format(PLUGIN_VERSION))
+            print('ERROR: {0} ({1}) failed to register Manager CommandData.'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION))
             return
-        print('Successfully registered Rokoko Studio Live ({0}).'.format(PLUGIN_VERSION))
+
+        print('Successfully registered {0} ({1}).'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION))
 
     # The preferences page is registered in any case (even if plugin got disabled by the user).
     # It's needed by the user to reenable the plugin.
-    res = c4d.plugins.RegisterPreferencePlugin(id=PLUGIN_ID_PREFS, g=PreferenceDataRokoko,
-                                               name=PLUGIN_NAME_COMMAND_MANAGER, description='rokokopreferences',
-                                               parentid=0, sortid=0)
-    if not res:
-        print('ERROR: Rokoko Studio Live ({0}) failed to register PrefData.'.format(PLUGIN_VERSION))
+    result = c4d.plugins.RegisterPreferencePlugin(id=PLUGIN_ID_PREFS, g=PreferenceDataRokoko,
+                                                  name=PLUGIN_NAME_COMMAND_MANAGER, description='rokokopreferences',
+                                                  parentid=0, sortid=0)
+    if not result:
+        print('ERROR: {0} ({1}) failed to register PrefData.'.format(PLUGIN_NAME_COMMAND_MANAGER, PLUGIN_VERSION))
 
 
 # EXECUTION STARTS HERE
 if __name__ == "__main__":
-    if not __USE_LZ4__:
-        WarnNoLZ4()
-
-    TestUDPPaketSize()
-
     RegisterRokokoStudioLive()

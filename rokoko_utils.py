@@ -5,11 +5,14 @@ import c4d
 # Import lz4 module for the correct platform
 __USE_LZ4__ = True
 try:
+    # TODO Andreas: Maybe with plugin version 1.3 we no longer need this OS dependent. Decide after Mac version is done...
     currentOS = c4d.GeGetCurrentOS()
     if currentOS == c4d.OPERATINGSYSTEM_WIN:
-        import packages.win.lz4.frame as lz4f
+        import lz4.frame as lz4f
+
     elif currentOS == c4d.OPERATINGSYSTEM_OSX:
         import lz4.frame as lz4f
+
 except:
     __USE_LZ4__ = False
 from rokoko_ids import *
