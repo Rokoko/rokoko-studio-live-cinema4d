@@ -15,7 +15,7 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
         versionC4DMajor = c4d.GetC4DVersion() // 1000
 
         # We only support Cinema 4D versions with Python 3, so R23+
-        if  < 23:
+        if versionC4DMajor < 23:
             c4d.gui.MessageDialog('Rokoko Studio Live:\nUnfortunately your version of Cinema 4D is not supported.\nMinimum required: R23', type=c4d.GEMB_ICONEXCLAMATION)
             return True
 
