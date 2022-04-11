@@ -60,7 +60,7 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
             versionPython = '39'
             versionLZ4 = '3.1.3'
 
-        elif versionC4DMajor == 25:
+        elif versionC4DMajor >= 25:
             versionPython = '39'
             versionLZ4 = '3.1.3'
 
