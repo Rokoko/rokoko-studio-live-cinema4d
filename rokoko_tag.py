@@ -704,7 +704,7 @@ class TagDataRokoko(c4d.plugins.TagData):
             # The entity selection combo box (actors, faces, props,...) allows
             # to select an entity either by name or by index.
 
-            # If there is a valifd data set belonging to current selection
+            # If there is a valid data set belonging to current selection
             bcDataSet = GetDataSetFromId(node[ID_TAG_DATA_SET])
             if bcDataSet is not None:
                 # Get enitites container for type of tag
@@ -1380,7 +1380,8 @@ class TagDataRokoko(c4d.plugins.TagData):
                 # Initialize first/last frame sliders
                 if idDataSet != GetConnectedDataSetId():
                     tag[ID_TAG_DATA_SET_FIRST_FRAME] = 0
-                    tag[ID_TAG_DATA_SET_LAST_FRAME] = g_thdListener.GetDataSetSize(idDataSet)
+                    tag[ID_TAG_DATA_SET_LAST_FRAME] = g_thdListener.GetDataSetSize(idDataSet) - 1
+
                 else:
                     # Live connection has no first or last frame
                     tag[ID_TAG_DATA_SET_FIRST_FRAME] = 0
