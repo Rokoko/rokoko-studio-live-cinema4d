@@ -34,8 +34,9 @@ def CreateLayoutAddQuickTab(dlg, id, noMultiselect=False, flags=c4d.BFH_SCALEFIT
 # button: If True, results in a clickable button. Note: Since some versions of C4D, this parameter seems to have very little effect...
 # toggle: If True, the button toggles between two states/and images
 #         (image of second state can only be set via idIcon2, use SetImage() if second state needs to be set by bitmap)
-def CreateLayoutAddBitmapButton(dlg, idButton, bmp=None, idIcon1=-1, idIcon2=-1, tooltip='', button=True, toggle=True, flags=c4d.BFH_CENTER|c4d.BFV_CENTER):
+def CreateLayoutAddBitmapButton(dlg, idButton, bmp=None, idIcon1=-1, idIcon2=-1, tooltip='', button=True, toggle=True, noHover=False, flags=c4d.BFH_CENTER|c4d.BFV_CENTER, w=0, h=0):
     bc = c4d.BaseContainer()
+
     bc.SetInt32(c4d.BITMAPBUTTON_IGNORE_BITMAP_WIDTH, False)
     bc.SetInt32(c4d.BITMAPBUTTON_IGNORE_BITMAP_HEIGHT, False)
     bc.SetBool(c4d.BITMAPBUTTON_BORDER, False)
@@ -43,18 +44,30 @@ def CreateLayoutAddBitmapButton(dlg, idButton, bmp=None, idIcon1=-1, idIcon2=-1,
     bc.SetBool(c4d.BITMAPBUTTON_TOGGLE, toggle)
     bc.SetBool(c4d.BITMAPBUTTON_DISABLE_FADING, not button) # R22 feature
     bc.SetString(c4d.BITMAPBUTTON_TOOLTIP, tooltip)
+
     if idIcon1 != -1:
         bc.SetInt32(c4d.BITMAPBUTTON_ICONID1, idIcon1)
+
     if idIcon2 != -1:
         bc.SetInt32(c4d.BITMAPBUTTON_ICONID2, idIcon2)
-    button = dlg.AddCustomGui(idButton, c4d.CUSTOMGUI_BITMAPBUTTON, '', flags, 0, 0, bc)
+
+    if c4d.GetC4DVersion() // 1000 >= 22:
+        bc.SetBool(c4d.BITMAPBUTTON_DISABLE_FADING, noHover)
+
+    button = dlg.AddCustomGui(idButton, c4d.CUSTOMGUI_BITMAPBUTTON, '', flags, w, h, bc)
     if bmp is not None:
         bmpButton = c4d.bitmaps.BaseBitmap()
+
         size = bmp.GetSize()
+
         if size[0] == 32:
             bmpButton.Init(18, 18)
+
         else:
             bmpButton.Init(size[0] // 2, size[1] // 2)
+
         bmp.ScaleIt(bmpButton, 256, True, False)
+
         button.SetImage(bmpButton)
+
     return button
