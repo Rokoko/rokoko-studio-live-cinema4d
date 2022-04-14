@@ -106,7 +106,6 @@ def OverrideRequesterChoice(choice, idRequester=None, msgs=['']):
     if GetRequesterChoice(idRequester) is None:
         return False # not overridden
 
-    print('OVERRIDE CHOICE', idRequester, choice)
     SetRequesterChoice(idRequester, choice)
 
     return True # overridden
