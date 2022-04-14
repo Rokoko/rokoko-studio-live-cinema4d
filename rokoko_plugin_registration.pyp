@@ -28,6 +28,7 @@ from rokoko_listener import *
 from rokoko_dialog_about import *
 from rokoko_dialog_save_recording import *
 from rokoko_dialog_manager import *
+from rokoko_dialog_question import *
 from rokoko_message_data import *
 from rokoko_commands import *
 from rokoko_command_install import *
@@ -85,33 +86,49 @@ def LoadStudioTPose():
 
 # Open a warning requester if no LZ module available.
 def WarnNoLZ4():
-    message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
-    message += 'Compression module not avalaible!\n'
-    message += 'Please set up custom connection in Rokoko Studio.\n\n'
-    message += 'See here: {0}\n\n'.format(LINK_CONNECTION_INSTRUCTIONS)
-    message += 'Ok: Open instructions in web browser.\n'
+    msg = [ ('Compression module (LZ4) not avalaible!', c4d.BORDER_WITH_TITLE_BOLD),
+            '',
+            'Please set up custom connection in Rokoko Studio.',
+            'See here:',
+            LINK_CONNECTION_INSTRUCTIONS
+          ]
 
-    result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_OKCANCEL)
-    if result == c4d.GEMB_R_OK:
+    buttonLabels = ['Open Instructions', 'Understood']
+
+    result = OpenErrorDialog(msgs=msg, buttonLabels=buttonLabels,
+                             icon=DQ_ICON_ERROR,
+                             idxFocus=0, idxAbort=1,
+                             wButton=c4d.gui.SizePix(90),
+                             saveDefault=True)
+    if result == 0:
+        OverrideRequesterChoice(1, msgs=msg) # avoid opening the instructions every time
+
         OpenLinkInBrowser(LINK_CONNECTION_INSTRUCTIONS)
 
 
 # Open a warning requester if UDP paket size smaller than desired.
 def WarnSmallUDPPaketSize():
-    message = PLUGIN_NAME_COMMAND_MANAGER + '\n\n'
-    message += 'Low UDP paket size set in MacOS!\n'
-    message += 'Please call the following command in a terminal:\n'
-    message += '    {0}\n\n'.format(COMMAND_SET_UDP_PAKET_SIZE)
-    message += 'Yes: Copy command to clipboard.\n'
-    message += 'No: Understood, but never show this warning again.\n'
-    message += 'Cancel: Do nothing.\n'
+    msg = [ ('Low UDP paket size set in MacOS!', c4d.BORDER_WITH_TITLE_BOLD),
+            '',
+            'Please call the following command in a terminal:',
+            '    {0}'.format(COMMAND_SET_UDP_PAKET_SIZE)
+          ]
 
-    result = c4d.gui.MessageDialog(message, c4d.GEMB_ICONEXCLAMATION | c4d.GEMB_YESNOCANCEL)
-    if result == c4d.GEMB_R_YES:
+    buttonLabels = ['Copy command to clipboard', 'Understood']
+
+    result = OpenErrorDialog(title='WARN',
+                             msgs=msg, buttonLabels=buttonLabels,
+                             icon=DQ_ICON_ERROR,
+                             idxFocus=0, idxAbort=1,
+                             wButton=c4d.gui.SizePix(140),
+                             saveDefault=True)
+    if result == 0:
+        OverrideRequesterChoice(1, msgs=msg) # avoid copying the command every time
+
         c4d.CopyStringToClipboard(COMMAND_SET_UDP_PAKET_SIZE)
 
-    elif result == c4d.GEMB_R_NO:
-        SetPref(ID_PREF_UDP_SIZE_NO_WARNING, True)
+    if GetRequesterChoice(msgs=msg) is not None:
+        SetPref(ID_PREF_UDP_SIZE_NO_WARNING, True) # avoid the actual test as well
 
 
 # Execute a command in a shell and return its output.
@@ -123,14 +140,23 @@ def ExecShellCommand(command):
                                 encoding='utf-8', text=True)
     except:
         pass # deliberately surpressing any exception
+
     if proc is None or proc.poll() is not None:
-        c4d.gui.MessageDialog('Rokoko Studio Live:\nFAILED to execute command!\n    {0}\n'.format(command), type=c4d.GEMB_ICONEXCLAMATION)
+        msg = [ ('Failed to execute command!', c4d.BORDER_WITH_TITLE_BOLD),
+                '',
+                '    {0}'.format(command),
+              ]
+
+        OpenErrorDialog(msgs=msg, icon=DQ_ICON_ERROR)
+
         return
+
     stdout, stderr = proc.communicate()
+
     return str(stdout), str(stderr)
 
 
-# Test UDP paket size configured in MacOS and warn accordingly
+# Test UDP paket size configured in MacOS and warn accordingly.
 def TestUDPPaketSize():
     # Only for MacOS
     currentOS = c4d.GeGetCurrentOS()

@@ -7,6 +7,7 @@ import sys, os, importlib, subprocess
 import c4d
 
 from rokoko_ids import *
+from rokoko_dialog_question import *
 
 
 class CommandDataRokokoInstall(c4d.plugins.CommandData):
@@ -16,7 +17,13 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
 
         # We only support Cinema 4D versions with Python 3, so R23+
         if versionC4DMajor < 23:
-            c4d.gui.MessageDialog('Rokoko Studio Live:\nUnfortunately your version of Cinema 4D is not supported.\nMinimum required: R23', type=c4d.GEMB_ICONEXCLAMATION)
+            msg = [ ('Unfortunately your version of Cinema 4D is not supported.', c4d.BORDER_WITH_TITLE_BOLD),
+                    '',
+                    'Minimum version required: R23'
+                  ]
+
+            OpenErrorDialog(msgs=msg, icon=DQ_ICON_ERROR)
+
             return True
 
         lz4Loader = importlib.util.find_spec('lz4')
@@ -25,21 +32,23 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
             # If we are here, it means there is an LZ4 module in Python available.
             # Yet, we are here, which means ther user has not yet restarted C4D,
             # because otherwise this CommandData would not have been registered at all.
-            message = 'Rokoko Studio Live:\n'
-            message += 'It seems installation has been run before, but Cinema 4D needs a restart.\n\n'
-            message += 'Please restart Cinema 4D, now.\n'
+            msg = [ 'It seems installation has been run before, but Cinema 4D needs a restart.',
+                    '',
+                    'Please restart Cinema 4D, now.'
+                  ]
 
-            c4d.gui.MessageDialog(message, type=c4d.GEMB_OK)
+            OpenInfoDialog(msgs=msg)
 
             return True
 
-        message = 'Rokoko Studio Live:\n'
-        message += 'Installation takes a few seconds.\n'
-        message += 'Cinema 4D will seem frozen during this time.\n\n'
-        message += 'Do you want to start installation, now?\n'
+        msg = [ 'Installation takes a few seconds.',
+                'Cinema 4D will seem frozen during this time.',
+                '',
+                'Do you want to start installation, now?'
+              ]
 
-        result = c4d.gui.MessageDialog(message, type=c4d.GEMB_OKCANCEL)
-        if result == c4d.GEMB_R_CANCEL:
+        result = OpenYesNoDialog(msgs=msg)
+        if result == DQ_RESULT_NO:
             return True
 
         # Determine the installation path.
@@ -73,7 +82,10 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
             pathPythonExec = os.path.join(pathPython, 'python')
 
         else:
-            c4d.gui.MessageDialog('Rokoko Studio Live:\nUnfortunately your OS is not supported.', type=c4d.GEMB_ICONEXCLAMATION)
+            msg = [ ('Unfortunately your OS is not supported.', c4d.BORDER_WITH_TITLE_BOLD) ]
+
+            OpenErrorDialog(msgs=msg, icon=DQ_ICON_ERROR)
+
             return True
 
         # First ensure, pip is installed.
@@ -85,7 +97,10 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
             pass # deliberately surpressing any exception
 
         if proc is None or proc.poll() is not None:
-            c4d.gui.MessageDialog('Rokoko Studio Live:\nFAILED to install pip!', type=c4d.GEMB_ICONEXCLAMATION)
+            msg = [ ('Failed to install pip!', c4d.BORDER_WITH_TITLE_BOLD) ]
+
+            OpenErrorDialog(msgs=msg, icon=DQ_ICON_ERROR)
+
             return True
 
         stdout, stderr = proc.communicate()
@@ -108,7 +123,10 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
             pass # deliberately surpressing any exception
 
         if proc is None or proc.poll() is not None:
-            c4d.gui.MessageDialog('Rokoko Studio Live:\nFAILED to install lz4!', type=c4d.GEMB_ICONEXCLAMATION)
+            msg = [ ('FAILED to install LZ4!', c4d.BORDER_WITH_TITLE_BOLD) ]
+
+            OpenErrorDialog(msgs=msg, icon=DQ_ICON_ERROR)
+
             return True
 
         stdout, stderr = proc.communicate()
@@ -116,16 +134,25 @@ class CommandDataRokokoInstall(c4d.plugins.CommandData):
 
         if 'Successfully installed lz4-' not in result:
             print(stdout[:80])
+            print(stdout[-80:])
             print(result)
-            c4d.gui.MessageDialog('Rokoko Studio Live:\nFAILED to install lz4!', type=c4d.GEMB_ICONEXCLAMATION)
+            msg = [ ('FAILED to install LZ4!', c4d.BORDER_WITH_TITLE_BOLD),
+                    '',
+                    'Please send output printed to Console to our support.'
+                  ]
+
+            OpenErrorDialog(msgs=msg, icon=DQ_ICON_ERROR)
+
             return True
 
-        message = 'Rokoko Studio Live:\n'
-        message += 'Installation successful!\n'
-        message += 'Cinema 4D needs to be restarted for the plugin to be loaded.\n\n'
-        message += 'Please restart Cinema 4D, now.\n'
+        msg = [ ('Installation successful.', c4d.BORDER_WITH_TITLE_BOLD),
+                '',
+                'Cinema 4D needs to be restarted for the plugin to be loaded.',
+                '',
+                'Please restart Cinema 4D, now.'
+              ]
 
-        c4d.gui.MessageDialog(message, type=c4d.GEMB_OK)
+        OpenInfoDialog(msgs=msg)
 
         # Would be cool to offer application restart to user, but
         # unfortunately in later versions of C4D c4d.RestartMe() does no longer reliably work.

@@ -32,7 +32,12 @@ def Hash31(s):
 
 # Depending on C4D version have a common "function pointer" to always use the correct hash function.
 if c4d.GetC4DVersion() // 1000 < 23:
-    MyHash = hash
+    if c4d.GeGetCurrentOS() == c4d.OPERATINGSYSTEM_OSX:
+        MyHash = Hash31
+
+    else:
+        MyHash = hash
+
 else:
     MyHash = Hash31
 
@@ -883,10 +888,96 @@ def RigTypeToEntitiesBcId(rigType):
     return idEntitiesBc
 
 
+# Miscellaneous utility functions
+
 # Open a link in an external browser.
 # GeExecuteFile() doesn't do, as it does not support # in links on Mac.
 def OpenLinkInBrowser(weblink):
     webbrowser.open(weblink)
+
+
+# Scales a BaseBitmap,
+# either to a given target size or by a factor.
+def ScaleImage(bmp, w=100, h=100, factor=0.0):
+    # In BaseBitmaps metadata there's the GUI scale factor, which we need to retain
+    guiPixelRatio = bmp.GetData(c4d.BASEBITMAP_DATA_GUIPIXELRATIO, 1.0)
+
+    if factor == 1.0:
+        # No scaling wanted, return bitmap as is
+        return bmp
+
+    elif factor != 0.0:
+        # Scale by factor, calculate target size
+        w, h = bmp.GetSize()
+
+        w = int(w * factor)
+        h = int(h * factor)
+
+    else:
+        # Scale to given target size (w, h)
+        pass
+
+    # Scale the bitmap
+    bmpScaled = c4d.bitmaps.BaseBitmap()
+
+    bmpScaled.Init(w, h)
+
+    bmp.ScaleIt(bmpScaled, 256, True, False)
+
+    # Store the GUI scale factor in scaled BaseBitmap
+    bmpScaled.SetData(c4d.BASEBITMAP_DATA_GUIPIXELRATIO, guiPixelRatio)
+
+    return bmpScaled
+
+
+# Returns the BaseBitmap of an icon,
+# either referenced by an Icon ID or directly for a BaseList2D.
+# Optionally scaled by a factor.
+def GetIconImage(idIconOrBl2d, factor=None):
+    # Get the IconData
+    if type(idIconOrBl2d) == int:
+        icon = c4d.gui.GetIcon(idIconOrBl2d)
+
+    else:
+        icon = idIconOrBl2d.GetIcon()
+
+    # If icon not found...
+    if icon is None:
+        print('ERROR: Icon not found ({0})'.format(idIconOrBl2d))
+        return None
+
+    # Get the actual icon bitmap
+    bmpIcon = icon['bmp'].GetClonePart(icon['x'], icon['y'], icon['w'], icon['h'])
+
+    # Optionally scale the bitmap
+    bmpIcon = ScaleImage(bmpIcon, factor=1.0 if factor is None else factor)
+
+    return bmpIcon
+
+
+# Loads an image from plugin's resource folder (or a sub-folder therefo).
+# Optionally the image may be scaled by a factor.
+# Also the GUI scale factor can be set.
+def LoadImage(filename, subfolder='img', suffix='.png', guiPixelRatio=1.0, factor=None):
+    # Assemble image path
+    filename = filename + suffix
+    imgPath = os.path.join(os.path.dirname(__file__), subfolder, filename)
+
+    # Load the image
+    bmp = c4d.bitmaps.BaseBitmap()
+    result = bmp.InitWith(imgPath)
+
+    if result[0] != c4d.IMAGERESULT_OK:
+        print('ERROR: Failed to load image: {0}'.format(filename))
+        return None
+
+    # Store the GUI scale factor in loaded BaseBitmap
+    bmp.SetData(c4d.BASEBITMAP_DATA_GUIPIXELRATIO, guiPixelRatio)
+
+    # Optionally scale the bitmap
+    bmp = ScaleImage(bmp, factor=1.0 if factor is None else factor)
+
+    return bmp
 
 
 # Debug tool to measure timing (very roughly)
