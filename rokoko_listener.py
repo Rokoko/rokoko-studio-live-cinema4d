@@ -215,7 +215,7 @@ class ThreadListener(c4d.threading.C4DThread):
                 if metaActor['hasFace'] != metaActorsExample['hasFace']:
                     equal = False
                     break
-                if actor['color'] != actorExample['color']:
+                if actor.get('color', [128, 128, 128]) != actorExample.get('color', [128, 128, 128]):
                     equal = False
                     break
         else:

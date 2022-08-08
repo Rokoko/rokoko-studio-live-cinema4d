@@ -703,7 +703,7 @@ def StoreAvailableEntitiesInDataSet(dataScene, bcDataSet, fps=60.0):
     actors = dataScene['actors']
     for idxActor, actor in enumerate(actors):
         nameActor = actor['name']
-        dataColor = actor['color']
+        dataColor = actor.get('color', [128, 128, 128])
         color = c4d.Vector(dataColor[0] / 255.0, dataColor[1] / 255.0, dataColor[2] / 255.0)
 
         # Determine availability of body parts/devices in motion data

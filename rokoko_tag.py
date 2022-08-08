@@ -1046,7 +1046,10 @@ class TagDataRokoko(c4d.plugins.TagData):
         # Iterate all objects of the rig (well, only those assigned in tag's mapping table)
         for nameInStudio, (obj, _, nameInRig, mRotOffsetRef) in self._tPoseTag.items():
             # Get Studio rotation and convert into C4D transformation matrix
-            dataBodyPart = dataBody[nameInStudio]
+            dataBodyPart = dataBody.get(nameInStudio, None)
+            if dataBodyPart is None:
+                continue
+                
             mStudioNewPose = JSONQuaternionToMatrix(dataBodyPart['rotation'])
 
             # Transform the current Studio rotation
