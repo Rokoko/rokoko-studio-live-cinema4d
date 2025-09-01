@@ -2275,10 +2275,6 @@ class DialogRokokoManager(c4d.gui.GeDialog):
             bcTag = tag.GetDataInstance()
 
             # Assign live connection to tag
-            #print(tag[ID_TAG_DATA_SET], idConnected, type(idConnected))
-            # TODO: Why is SetParameter not possible, here???
-            #tag[ID_TAG_DATA_SET] = idConnected # -> error
-            #tag.SetParameter(ID_TAG_DATA_SET, idConnected, c4d.DESCFLAGS_SET_NONE) # -> nothing happens
             bcTag.SetInt32(ID_TAG_DATA_SET, idConnected)
 
             # Iterate all entities available in data
