@@ -38,7 +38,7 @@ else:
 # relies on SpecialEventAdd().
 # SpecialEventAdd() allows to send a event message to be received in CoreMessage().
 # Unfortunately including parameters into the event message is a bit limited in C4D's Python API
-# (more or less limited to twr numerical values).
+# (more or less limited to two numerical values).
 # And with C4D R23 and Python 3, the way to access these parameters changed.
 
 # C4D R23+: Get Parameter from an event message
