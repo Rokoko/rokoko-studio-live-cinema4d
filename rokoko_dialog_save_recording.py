@@ -9,6 +9,7 @@
 import os
 import c4d
 from rokoko_ids import *
+from rokoko_rig_tables import *
 from rokoko_utils import *
 from rokoko_listener import *
 from rokoko_dialog_utils import *
