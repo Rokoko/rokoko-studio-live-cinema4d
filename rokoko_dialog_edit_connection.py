@@ -12,11 +12,11 @@ Intended to be used as a modal dialog.
 import c4d
 
 import rokoko_ids as rid
-from rokoko_utils import BaseContainerConnection
-from rokoko_dialog_utils import (
-    CreateLayoutAddGroupBar,
+from rokoko_utils import (
+    BaseContainerConnection,
     MyHash,
 )
+from rokoko_dialog_utils import CreateLayoutAddGroupBar
 
 
 class DialogEditConnection(c4d.gui.GeDialog):
