@@ -1186,7 +1186,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         # See:
         # https://plugincafe.maxon.net/topic/12726/how-to-enforce-statusbar-redraws
         c4d.StatusClear()
-        c4d.StatusSetText('Baking Rokoko Motion to Keyframes...')
+        c4d.StatusSetText("Baking Rokoko Motion to Keyframes...")
         c4d.StatusSetBar(0)
 
         doc.StartUndo()
@@ -1195,11 +1195,11 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         if createTake:
             takeData = doc.GetTakeData()
             if takeData is None:
-                print('ERROR: Failed to retrieve the take data.')
+                print("ERROR: Failed to retrieve the take data.")
                 return
             take = takeData.AddTake(nameDataSet, None, None)
             if take is None:
-                print('ERROR: Failed to add a new take.')
+                print("ERROR: Failed to add a new take.")
                 return
 
             doc.AddUndo(c4d.UNDOTYPE_NEW, take)
