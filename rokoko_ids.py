@@ -6,7 +6,9 @@ PLUGIN_NAME_TAG = "Rokoko Tag"
 PLUGIN_VERSION_MAJOR = 1
 PLUGIN_VERSION_MINOR = 3
 PLUGIN_VERSION_PATCH = 20250902
-PLUGIN_VERSION = f"{PLUGIN_VERSION_MAJOR}.{PLUGIN_VERSION_MINOR}.{PLUGIN_VERSION_PATCH}"
+PLUGIN_VERSION = (f"{PLUGIN_VERSION_MAJOR}."
+                  f"{PLUGIN_VERSION_MINOR}."
+                  f"{PLUGIN_VERSION_PATCH}")
 
 # Main plugin ID (used to access BaseContainers, etc.)
 PLUGIN_ID_COMMAND_MANAGER = 1056094
@@ -340,4 +342,8 @@ ID_BC_PRESET_NAME = 1000
 ID_BC_PRESET_TYPE = 0  # 0: rig, 1: face
 
 
-LINK_CONNECTION_INSTRUCTIONS = "https://github.com/Rokoko/rokoko-studio-live-cinema4d/wiki/Rokoko-Studio-Live-Plugin-for-Cinema#what-if-above-procedure-failed"
+LINK_ROKOKO = "https://www.rokoko.com"
+LINK_STUDIO_LIVE_LICENSE = "https://github.com/Rokoko/rokoko-studio-live-cinema4d/blob/main/LICENSE"  # noqa: E501
+LINK_DOCUMENTATION = "https://help.rokoko.com/support/solutions/folders/47000773247"  # noqa: E501
+LINK_FORUMS = "https://rokoko.freshdesk.com/support/discussions/forums/47000400299"  # noqa: E501
+LINK_CONNECTION_INSTRUCTIONS = "https://github.com/Rokoko/rokoko-studio-live-cinema4d/wiki/Rokoko-Studio-Live-Plugin-for-Cinema#what-if-above-procedure-failed"  # noqa: E501
