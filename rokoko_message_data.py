@@ -110,9 +110,8 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             self._cntUpdateDlgFrameCount == 0
         else:
             div = 4 - playbackRate
-            # TODO Andreas: Comparison looks like a bug!
-            #               Check, how to test and fix!!!
-            self._cntUpdateDlgFrameCount == (self._cntUpdateDlgFrameCount + 1) % div
+            frameCountNext = self._cntUpdateDlgFrameCount + 1
+            self._cntUpdateDlgFrameCount = frameCountNext % div
         if self._cntUpdateDlgFrameCount == 0:
             c4d.SpecialEventAdd(
                 rid.PLUGIN_ID_COREMESSAGE_MANAGER_CURRENT_FRAME_NUMBER,
