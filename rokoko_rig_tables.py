@@ -1,4 +1,9 @@
-'''These tables hold the strings for automatic rig and face morph detection.'''
+'''These tables hold the strings for automatic rig and face morph detection.
+
+NOTE: flake8 throws errors due to column-wise formatting (E203).
+      I was not able to silence these. Yet, I did not wat to give up the
+      formatting. So, we need to live with these...
+'''
 
 #   nameStudio           : (nameDisplay,                       type,[namesMain],                             [nameAttrNeeded],    [nameAttrForbidden],      [nameSideInclude], [nameSideExclude])   # noqa: E241, E501
 STUDIO_NAMES_TO_GUESS = {
