@@ -1332,16 +1332,16 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
         # Gather some state information
         live = g_thdListener._receive
-        allowWhileNotLive = not live and \
-            (self._tags is not None and len(self._tags) > 0)
+        tagsExist = self._tags is not None and len(self._tags) > 0
+        allowWhileNotLive = not live and tagsExist
         isConnected = IsConnected()
-        tagsExist = self._tags is not None
 
         # Set label of "Start/Stop Player" button
         if live:
             self.SetString(rid.ID_DLGMNGR_PLAYER_START_STOP, "Stop Player")
         else:
             self.SetString(rid.ID_DLGMNGR_PLAYER_START_STOP, "Start Player")
+        self.Enable(rid.ID_DLGMNGR_PLAYER_START_STOP, tagsExist)
 
         # Set label of "Start/Stop Recording..." button
         if self._buttonRecordState:
@@ -1354,7 +1354,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
 
         # Disable tag parameters of tags involved in playback
         tagsLive = g_thdListener.GetTagConsumers()
-        anyLiveDataSet = False # Is live connection involved
+        anyLiveDataSet = False  # Is live connection involved
         if tagsExist:
             # Iterate all tags
             idConnected = GetConnectedDataSetId()
@@ -1393,7 +1393,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
         # Assign unassigned tags to live connection
         self.Enable(
             rid.ID_DLGMNGR_ASSIGN_UNASSIGNED_TAGS,
-            isConnected and not live and tagsExist and len(self._tags) > 0)
+            isConnected and not live and tagsExist)
 
         # Select buttons
         self.Enable(rid.ID_DLGMNGR_SELECT_ALL_TAGS, allowWhileNotLive)
