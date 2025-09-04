@@ -858,7 +858,7 @@ class DialogRokokoManager(c4d.gui.GeDialog):
                         self.AddStaticText(
                             0, c4d.BFH_SCALEFIT, initw=100, name="Actor")
                         self.AddStaticText(
-                            0, c4d.BFH_RIGHT, initw=23, name="Sel")
+                            0, c4d.BFH_RIGHT, initw=35, name="Sel")
 
                         # Iterate all tags in current document
                         if self._tags is not None and len(self._tags) > 0:
