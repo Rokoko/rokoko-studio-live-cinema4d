@@ -214,6 +214,9 @@ def GetWorldPrefs():
         bcWorldPrefs = GetDefaultPrefContainer()
         c4d.plugins.SetWorldPluginData(
             rid.PLUGIN_ID_COMMAND_MANAGER, bcWorldPrefs, True)
+        # Rather safe than sorry, so we work with the correct instance
+        bcWorldPrefs = c4d.plugins.GetWorldPluginData(
+            rid.PLUGIN_ID_COMMAND_MANAGER)
     return bcWorldPrefs
 
 
