@@ -1032,7 +1032,8 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         # Frame reduction parameters allow to specify in two ways:
         # Parameter (combo box) value < 10: Only bake every nth frame
         # Parameter (combo box) value >= 10: Basically specifying keyframes per
-        #                                    second (C4D's document time)
+        #                                    second (C4D's document time),
+        #                                    500 referring to document FPS
         skipByIndex = skipFrames < 10
         skipByTime = skipFrames >= 10
         if skipFrames == 500:
@@ -1059,6 +1060,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         for idxFrame in range(numFrames):
             # Calculate the effective frame index and get the motion data frame
             idxFrameEffective = idxFirstFrameEffective + idxFrame % lenTagClip
+            idxFrameEffective = min(idxFrameEffective, len(dataQueue) - 1)
             data = dataQueue[idxFrameEffective]
 
             c4d.StatusSetBar(int(100.0 * float(idxFrame) / float(numFrames)))
