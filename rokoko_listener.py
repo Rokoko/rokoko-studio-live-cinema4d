@@ -400,12 +400,26 @@ class ThreadListener(c4d.threading.C4DThread):
         self.FlushTagConsumers()  # there shouldn't be any, but nevertheless...
 
         # Create and bind the socket
+        errorConnect = False
+
         self._lockConnect.acquire()
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # we'll start with a short timeout for quick connection result
         self._sock.settimeout(0.2)
-        self._sock.bind(("", int(bcConnection[rid.ID_BC_DATASET_LIVE_PORT])))
+        try:
+            self._sock.bind(
+                ("", int(bcConnection[rid.ID_BC_DATASET_LIVE_PORT])))
+        except OSError:
+            errorConnect = True
         self._lockConnect.release()
+
+        if errorConnect:
+            self._statusConnection = 0  # Not connected
+            self._statusConnectionLast = 0
+            c4d.SpecialEventAdd(rid.PLUGIN_ID_COREMESSAGE_CONNECTION,
+                                rid.CM_SUBID_CONNECTION_CONNECT_ERROR)
+            print("ERROR: Failed to bind socket (already in use?)")
+            return
 
         # Initialize connection and player status
         self._statusConnection = 2  # Connected No Data

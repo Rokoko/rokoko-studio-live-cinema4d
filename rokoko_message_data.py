@@ -110,9 +110,8 @@ class MessageDataRokoko(c4d.plugins.MessageData):
             self._cntUpdateDlgFrameCount == 0
         else:
             div = 4 - playbackRate
-            # TODO Andreas: Comparison looks like a bug!
-            #               Check, how to test and fix!!!
-            self._cntUpdateDlgFrameCount == (self._cntUpdateDlgFrameCount + 1) % div
+            frameCountNext = self._cntUpdateDlgFrameCount + 1
+            self._cntUpdateDlgFrameCount = frameCountNext % div
         if self._cntUpdateDlgFrameCount == 0:
             c4d.SpecialEventAdd(
                 rid.PLUGIN_ID_COREMESSAGE_MANAGER_CURRENT_FRAME_NUMBER,
@@ -313,6 +312,20 @@ class MessageDataRokoko(c4d.plugins.MessageData):
                             rid.CM_SUBID_MANAGER_UPDATE_TAG_PARAMS)
         c4d.EventAdd()
 
+    def CoreMessageConnectError(self):
+        '''React to "connect error" message from listener thread.'''
+
+        # Reset connection state
+        self._init = 0
+
+        # Inform Manager dialog to have proper UI state
+        c4d.SpecialEventAdd(rid.PLUGIN_ID_COREMESSAGE_CONNECTION,
+                            rid.CM_SUBID_CONNECTION_STATUS_CHANGE)
+
+        c4d.gui.MessageDialog(
+            "Failed to connect!\nSocket already in use?",
+            c4d.GEMB_ICONEXCLAMATION)
+
     def CoreMessageEMsgChange(self):
         '''React to C4D's EVMSG_CHANGE
 
@@ -374,6 +387,8 @@ class MessageDataRokoko(c4d.plugins.MessageData):
                 self.CoreMessageConnectionStatusChange()
             elif subId == rid.CM_SUBID_CONNECTION_LIVE_DATA_CHANGE:
                 self.CoreMessageLiveDataChange()
+            elif subId == rid.CM_SUBID_CONNECTION_CONNECT_ERROR:
+                self.CoreMessageConnectError()
 
         elif id == rid.PLUGIN_ID_COREMESSAGE_PLAYER:
             subId = GetCoreMessageParam(bc)

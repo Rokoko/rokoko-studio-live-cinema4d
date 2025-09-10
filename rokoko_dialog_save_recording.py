@@ -1017,7 +1017,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         tPose,
         curvesRot,
         curvesPos,
-        time,
+        fps,
         timeStart,
         timeMax,
         idxLastKey
@@ -1290,7 +1290,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                     idxFirstFrame, idxLastFrame,
                     tag, tPose,
                     curvesRot, curvesPos,
-                    time, timeStart, timeMax,
+                    fps, timeStart, timeMax,
                     idxLastKey)
 
                 # Take overrides need to be updated (again depending on type
@@ -1352,7 +1352,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                     idxFirstFrame, idxLastFrame,
                     tag, tPose,
                     curvesRot, curvesPos,
-                    time, timeStart, timeMax, idxLastKey)
+                    fps, timeStart, timeMax, idxLastKey)
 
         # If a new Take was created, optionally select the new one
         if createTake:
