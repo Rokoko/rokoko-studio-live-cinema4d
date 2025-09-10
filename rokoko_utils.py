@@ -38,7 +38,7 @@ else:
 # relies on SpecialEventAdd().
 # SpecialEventAdd() allows to send a event message to be received in CoreMessage().
 # Unfortunately including parameters into the event message is a bit limited in C4D's Python API
-# (more or less limited to twr numerical values).
+# (more or less limited to two numerical values).
 # And with C4D R23 and Python 3, the way to access these parameters changed.
 
 # C4D R23+: Get Parameter from an event message
@@ -703,7 +703,7 @@ def StoreAvailableEntitiesInDataSet(dataScene, bcDataSet, fps=60.0):
     actors = dataScene['actors']
     for idxActor, actor in enumerate(actors):
         nameActor = actor['name']
-        dataColor = actor['color']
+        dataColor = actor.get('color', [128, 128, 128])
         color = c4d.Vector(dataColor[0] / 255.0, dataColor[1] / 255.0, dataColor[2] / 255.0)
 
         # Determine availability of body parts/devices in motion data
