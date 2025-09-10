@@ -210,15 +210,15 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                 self.AddStaticText(0, c4d.BFH_SCALEFIT, name="")  # Dummy
 
                 # Row 4
-                self.AddCheckbox(rid.ID_DLGSAVE_CREATE_IN_TAKE,
-                                 c4d.BFH_SCALEFIT,
-                                 name="Create New Take",
-                                 initw=0, inith=0)
+                self.AddStaticText(0, c4d.BFH_SCALEFIT, name="Target Take")
+                self.AddComboBox(rid.ID_DLGSAVE_TARGET_TAKE, c4d.BFH_SCALEFIT)
+                self.AddChild(rid.ID_DLGSAVE_TARGET_TAKE, 0, "Create New Take")
+                self.AddChild(rid.ID_DLGSAVE_TARGET_TAKE, 1, "Use Active Take")
+                self.AddChild(rid.ID_DLGSAVE_TARGET_TAKE, 2, "Use Main Take")
                 self.AddCheckbox(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE,
                                  c4d.BFH_SCALEFIT,
                                  name="Activate New Take",
                                  initw=0, inith=0)
-                self.AddStaticText(0, c4d.BFH_SCALEFIT, name="")  # Dummy
 
                 # Row 5
                 self.AddCheckbox(rid.ID_DLGSAVE_WIPE_EXISTING_ANIMATION,
@@ -409,12 +409,12 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                       self._idxFrameLast,
                       min=1, max=self._idxFrameLast,
                       min2=1, max2=self._idxFrameLast)
-        self.SetBool(rid.ID_DLGSAVE_CREATE_IN_TAKE,
-                     GetPref(rid.ID_DLGSAVE_CREATE_IN_TAKE))
+        self.SetInt32(rid.ID_DLGSAVE_TARGET_TAKE,
+                      GetPref(rid.ID_DLGSAVE_TARGET_TAKE))
         self.SetBool(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE,
                      GetPref(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE))
         self.Enable(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE,
-                    self.GetBool(rid.ID_DLGSAVE_CREATE_IN_TAKE))
+                    self.GetInt32(rid.ID_DLGSAVE_TARGET_TAKE) == 0)
         self.SetBool(rid.ID_DLGSAVE_WIPE_EXISTING_ANIMATION,
                      GetPref(rid.ID_DLGSAVE_WIPE_EXISTING_ANIMATION))
         self.SetInt32(rid.ID_DLGSAVE_TIMING, GetPref(rid.ID_DLGSAVE_TIMING))
@@ -1131,7 +1131,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         idConnected = GetConnectedDataSetId()
         idxFirstFrame = self.GetInt32(rid.ID_DLGSAVE_FIRST_FRAME)
         idxLastFrame = self.GetInt32(rid.ID_DLGSAVE_LAST_FRAME)
-        createTake = self.GetBool(rid.ID_DLGSAVE_CREATE_IN_TAKE)
+        modeTake = self.GetInt32(rid.ID_DLGSAVE_TARGET_TAKE)
         if not self._bakingOnly:
             nameDataSet = self.GetString(rid.ID_DLGSAVE_NAME_DATASET)
         else:
@@ -1198,22 +1198,28 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         doc.StartUndo()
 
         # Optionally create a new Take for the keyframes to be baked into
-        if createTake:
-            takeData = doc.GetTakeData()
-            if takeData is None:
-                print("ERROR: Failed to retrieve the take data.")
-                return
+        takeData = doc.GetTakeData()
+        if takeData is None:
+            print("ERROR: Failed to retrieve the take data.")
+            return
+        # Have Main Take active during baking (store current selection to
+        # be able to restore it later on)
+        takeOld = takeData.GetCurrentTake()
+        if modeTake == 0:
             take = takeData.AddTake(nameDataSet, None, None)
             if take is None:
                 print("ERROR: Failed to add a new take.")
                 return
-
             doc.AddUndo(c4d.UNDOTYPE_NEW, take)
+        elif modeTake == 1:
+            take = takeData.GetCurrentTake()
+        elif modeTake == 2:
+            # In fact, we will bake ignoring Takes completely.
+            # Just setting keyframes, as that code branch already provides us
+            # with easy undo
+            take = takeData.GetMainTake()
 
-            # Have Main Take active during baking (store current selection to
-            # be able to restore it later on)
-            takeOld = takeData.GetCurrentTake()
-            takeData.SetCurrentTake(takeData.GetMainTake())
+        takeData.SetCurrentTake(takeData.GetMainTake())
 
         # Have all actors in their original position (before any playback
         # started)
@@ -1243,7 +1249,9 @@ class DialogSaveRecording(c4d.gui.GeDialog):
             else:
                 tPose = None
 
-            if createTake:
+            if modeTake != 2:
+                # Bake into new Take or currently active "non-Main" Take
+
                 # All curves and overrides needed during baking will be stored
                 # in these dictionaries
                 overridesRot = {}
@@ -1326,6 +1334,8 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                         overridesPos[nameObj][idxComponent].UpdateSceneNode(
                             takeData, descIdPosComponents[idxComponent])
             else:
+                # Bake into Main Take (ignoring Take system completely)
+
                 # Create an undo for the host object (this includes all
                 # children in case of actor rigs)
                 # In the Take branch the Take system manages undo for us.
@@ -1361,12 +1371,12 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                     fps, timeStart, timeMax, idxLastKey)
 
         # If a new Take was created, optionally select the new one
-        if createTake:
-            if self.GetBool(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE):
-                takeData.SetCurrentTake(take)
-            else:
-                # restore previous Take selection
-                takeData.SetCurrentTake(takeOld)
+        activateNewTake = self.GetBool(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE)
+        if modeTake == 0 and activateNewTake:
+            takeData.SetCurrentTake(take)
+        else:
+            # restore previous Take selection
+            takeData.SetCurrentTake(takeOld)
 
         # Optionally forward document time ("one motion data frame" after
         # the last created keyframe)
@@ -1388,12 +1398,17 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         self._clipStored = True
 
         # Success requester
-        if createTake:
+        if modeTake == 0:
             c4d.gui.MessageDialog(
                 f"Successfully baked keyframes in Take '{nameDataSet}'.")
-        else:
+        elif modeTake == 1:
             c4d.gui.MessageDialog(
                 "Successfully baked keyframes in current Take.")
+        elif modeTake == 2:
+            c4d.gui.MessageDialog(
+                "Successfully baked keyframes in Main Take.")
+        else:
+            print(f"ERROR: Unkown target Take mode during baking ({modeTake})")
 
     def CommandStoreDataSet(self, local=False):
         '''User pressed "Store Clip" button.
@@ -1503,10 +1518,10 @@ class DialogSaveRecording(c4d.gui.GeDialog):
                               min2=0, max2=self._idxFrameLast - 1)
 
         # Bake options
-        elif id == rid.ID_DLGSAVE_CREATE_IN_TAKE:
-            SetPref(id, self.GetBool(id))
+        elif id == rid.ID_DLGSAVE_TARGET_TAKE:
+            SetPref(id, self.GetInt32(id))
             self.Enable(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE,
-                        self.GetBool(rid.ID_DLGSAVE_CREATE_IN_TAKE))
+                        self.GetInt32(rid.ID_DLGSAVE_TARGET_TAKE) == 0)
         elif id == rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE:
             SetPref(id, self.GetBool(id))
         elif id == rid.ID_DLGSAVE_WIPE_EXISTING_ANIMATION:

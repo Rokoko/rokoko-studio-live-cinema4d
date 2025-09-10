@@ -291,9 +291,9 @@ def InitBaseContainer():
     enabled = GetPref(rid.ID_DLGMNGR_GROUP_COMMAND_API)
     if enabled is None:
         SetPref(rid.ID_DLGMNGR_GROUP_COMMAND_API, False)
-    value = GetPref(rid.ID_DLGSAVE_CREATE_IN_TAKE)
+    value = GetPref(rid.ID_DLGSAVE_TARGET_TAKE)
     if value is None:
-        SetPref(rid.ID_DLGSAVE_CREATE_IN_TAKE, True)
+        SetPref(rid.ID_DLGSAVE_TARGET_TAKE, 0)
     value = GetPref(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE)
     if value is None:
         SetPref(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE, False)
