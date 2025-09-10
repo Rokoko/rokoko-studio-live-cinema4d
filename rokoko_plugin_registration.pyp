@@ -4,8 +4,11 @@
 # Additionally C4D's plugin messages (PluginMessage()) are handled here, mainly some
 # startup/shutdown logic.
 import sys, os, subprocess
+
 import c4d
-if c4d.GetC4DVersion() // 1000 > 22:
+
+c4dVersionMajor = c4d.GetC4DVersion() // 1000
+if c4dVersionMajor > 22:
     from importlib import reload
 
 basedir = __file__[:__file__.rfind(os.sep)]
@@ -21,6 +24,46 @@ def ReloadRokokoModules():
         if module.__name__[:end] == 'rokoko_':
             reload(module)
 
+# Import LZ4 module for the correct C4D Python version:
+# Key: C4D major version
+OS_PATHS = {
+    c4d.OPERATINGSYSTEM_WIN: "win",
+    c4d.OPERATINGSYSTEM_OSX: "mac",
+    c4d.OPERATINGSYSTEM_LINUX: "linux",
+}
+PACKAGE_PATHS = {
+    23: "packages",  # Python 3.7.7
+    24: "packages_c4d_S24",  # Python 3.9.1
+    25: "packages_c4d_S24",
+    26: "packages_c4d_S24",
+    2023: "packages_c4d_2023",  # Python 3.10.8
+    2024: "packages_c4d_2024",  # Python 3.11.4
+    2025: "packages_c4d_2024",
+    2026: "packages_c4d_2024",
+}
+# This needs to be done BEFORE importing any rokoko plugin modules.
+# Here the import path gets added, so all other modules can do a normal import.
+# In this source file LZ4 itself is actually only needed for a test on startup to warn the user.
+__USE_LZ4__ = True
+try:
+    # Try system-wide LZ4 first
+    import lz4.frame as lz4f
+    print("[Rokoko] LZ4 import provided by C4D")
+except ImportError:
+    currentOS = c4d.GeGetCurrentOS()
+    try:
+        # Fallback to bundled LZ4
+        print(f"[Rokoko] LZ4 package path: {PACKAGE_PATHS[c4dVersionMajor]}")
+        sys.path.insert(
+            0,
+            os.path.join(os.path.dirname(__file__),
+                         PACKAGE_PATHS[c4dVersionMajor],
+                         OS_PATHS[currentOS]))
+        import lz4.frame as lz4f
+    except Exception as e:
+        print(f"[Rokoko] LZ4 import failed (OS: {currentOS}, C4D: {c4dVersionMajor}): {e}")
+        __USE_LZ4__ = False
+
 from rokoko_ids import *
 from rokoko_rig_tables import *
 from rokoko_utils import *
@@ -32,18 +75,6 @@ from rokoko_message_data import *
 from rokoko_commands import *
 from rokoko_tag import *
 from rokoko_prefs import *
-
-# Import lz4 module for the correct platform
-# Here it's only done for a test on startup to warn the user.
-__USE_LZ4__ = True
-try:
-    currentOS = c4d.GeGetCurrentOS()
-    if currentOS == c4d.OPERATINGSYSTEM_WIN:
-        import packages.win.lz4.frame as lz4f
-    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-        import lz4.frame as lz4f
-except:
-    __USE_LZ4__ = False
 
 
 COMMAND_TEST_UDP_PAKET_SIZE = 'sysctl -h net.inet.udp.maxdgram'

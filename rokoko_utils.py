@@ -1,17 +1,15 @@
 # Various utility functions.
-import time, math, hashlib, json, webbrowser
+import hashlib, json, math, os, sys, time, webbrowser
 from ctypes import pythonapi, c_void_p, py_object
-import c4d
-# Import lz4 module for the correct platform
+
 __USE_LZ4__ = True
 try:
-    currentOS = c4d.GeGetCurrentOS()
-    if currentOS == c4d.OPERATINGSYSTEM_WIN:
-        import packages.win.lz4.frame as lz4f
-    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-        import lz4.frame as lz4f
-except:
+    import lz4.frame as lz4f
+except ImportError:
     __USE_LZ4__ = False
+
+import c4d
+
 from rokoko_ids import *
 from rokoko_rig_tables import *
 

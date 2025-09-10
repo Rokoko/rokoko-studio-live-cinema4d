@@ -12,23 +12,22 @@
 # If no connection to Rokoko Studio exists, a slightly simpler thread is used, which provides
 # the "clock" for playback (instead of the Studio stream being used for this purpose) and
 # dispatches the frames from the Clip queues to all involved tags.
-import os, socket, json, time
+import json, os, socket, sys, time
 from threading import Condition
-import c4d
-# Import lz4 module for the correct platform
+
 __USE_LZ4__ = True
 try:
-    currentOS = c4d.GeGetCurrentOS()
-    if currentOS == c4d.OPERATINGSYSTEM_WIN:
-        import packages.win.lz4.frame as lz4f
-    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-        import lz4.frame as lz4f
-except:
+    import lz4.frame as lz4f
+except ImportError:
     __USE_LZ4__ = False
+
+import c4d
+
 from rokoko_ids import *
 from rokoko_rig_tables import *
 from rokoko_utils import *
 from rokoko_tag_queue import *
+
 
 # There is one single global listener thread in Rokoko Studio Live.
 g_thdListener = None

@@ -8,19 +8,17 @@
 # The dialog itself holds no (almost no) data or state. All data is stored in world prefs, document
 # data and/or Rokoko tag's BaseContainer. The dialog only displays this data and provides
 # means to change such distributed information from a central place.
-import os, shutil, json
+import json, os, shutil, sys
 import urllib.request
-import c4d
-# Import lz4 module for the correct platform
+
 __USE_LZ4__ = True
 try:
-    currentOS = c4d.GeGetCurrentOS()
-    if currentOS == c4d.OPERATINGSYSTEM_WIN:
-        import packages.win.lz4.frame as lz4f
-    elif currentOS == c4d.OPERATINGSYSTEM_OSX:
-        import lz4.frame as lz4f
-except:
+    import lz4.frame as lz4f
+except ImportError:
     __USE_LZ4__ = False
+
+import c4d
+
 from rokoko_ids import *
 from rokoko_utils import *
 from rokoko_listener import *
@@ -29,6 +27,7 @@ from rokoko_dialog_about import *
 from rokoko_dialog_save_recording import *
 from rokoko_dialog_edit_connection import *
 from rokoko_dialog_edit_dataset import *
+
 
 # To disable actual file operations (clip management) during development
 DO_FILE_ACTION = True
