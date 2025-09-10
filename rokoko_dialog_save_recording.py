@@ -34,6 +34,10 @@ from rokoko_listener import GetListenerThread
 from rokoko_dialog_utils import CreateLayoutAddGroupBar
 
 
+FPS_30 = 0.033333
+FPS_60 = 0.016667
+
+
 g_thdListener = GetListenerThread()  # owned by rokoko_listener
 g_studioTPose = {}  # created and owned by rokoko_plugin_registration
 
@@ -1151,7 +1155,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         # Determine time of last frame to be baked and optionally extend
         # the project end time in C4D
         timeMax = doc.GetMaxTime()
-        timeStudioMax = c4d.BaseTime(0.016667 * numDataFrames)
+        timeStudioMax = c4d.BaseTime(FPS_30 * numDataFrames)
         if behaviorAtEnd == 0 and (timeStart + timeStudioMax) > timeMax:
             doc.SetMaxTime(timeStart + timeStudioMax)
 
@@ -1368,7 +1372,7 @@ class DialogSaveRecording(c4d.gui.GeDialog):
         # the last created keyframe)
         if autoForward:
             doc.SetTime(
-                timeStart + c4d.BaseTime(0.016667 * (idxLastKey[0] + 1)))
+                timeStart + c4d.BaseTime(FPS_30 * (idxLastKey[0] + 1)))
 
         doc.EndUndo()
 
