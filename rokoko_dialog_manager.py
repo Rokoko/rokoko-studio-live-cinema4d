@@ -3153,9 +3153,8 @@ class DialogRokokoManager(c4d.gui.GeDialog):
                 assigned[name] |= rigType
                 break
 
+        self.InitValues()
         c4d.EventAdd()
-
-        # self.InitValues()
 
     def CommandProjectScale(self):
         '''User changed project scale,

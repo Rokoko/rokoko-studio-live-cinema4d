@@ -114,7 +114,7 @@ class TagDataRokoko(c4d.plugins.TagData):
     # - Execute()
     # - CopyTo()
 
-    def Init(self, node):
+    def Init(self, node, isCloneInit=False):
         '''Called by C4D to initialize a new tag instance.
 
         This call happens _before_ the tag gets assigned to the host object.

@@ -23,32 +23,37 @@ from rokoko_description_utils import GetDDescriptionCreateBool
 # preferences page dynamically (as in this plugin).
 # So there's a more or less empty description resource only providing a main
 # group, where all dynamically created parameters will reside in.
-# During development the group ID symbol sometimes went missing. Most likely
-# this shouldn't be an issue for a user. Nevertheless we only try to use this
-# constant and define it on our own, if it's not available.
-try:
-    # TODO: Check with Maxon, how to reliably access resource symbols...
-    ROKOKOPREFERENCES_MAIN_GROUP = c4d.ROKOKOPREFERENCES_MAIN_GROUP
-except AttributeError:
-    ROKOKOPREFERENCES_MAIN_GROUP = 999
+
+# From Maxon's example code:
+# The first time Cinema 4D will compile this script into Python Bytecode,
+# symbols will not be yet parsed.
+# This will cause ROKOKOPREFERENCES_MAIN_GROUP not defined in the c4d module.
+# Thats why we manually do it
+if not hasattr(c4d, "ROKOKOPREFERENCES_MAIN_GROUP"):
+    c4d.ROKOKOPREFERENCES_MAIN_GROUP = 999
+
+
+DID_PREF_PLUGIN_ENABLED = c4d.DescID(c4d.DescLevel(rid.ID_PREF_PLUGIN_ENABLED,
+                                                   c4d.DTYPE_BOOL,
+                                                   0))
 
 
 class PreferenceDataRokoko(c4d.plugins.PreferenceData):
 
-    def InitPrefValue(self, description, id, dtype, bcWorldPrefs):
-        self.InitPreferenceValue(
-            id, True, description,
-            c4d.DescID(c4d.DescLevel(id, dtype, 0)),
-            bcWorldPrefs)
+    def InitValues(self, descId, description=None):
+        bcWorldPrefs = GetWorldPrefs()
 
-    def Init(self, node, description=None):
+        paramId = descId[0].id
+        if paramId == rid.ID_PREF_PLUGIN_ENABLED:
+            self.InitPreferenceValue(
+                paramId, True, description, descId, bcWorldPrefs)
+
+        return True
+
+    def Init(self, node, isCloneInit=False):
         '''Called by C4D to initialize the preference values.'''
 
-        bcWorldPrefs = GetWorldPrefs()
-        self.InitPrefValue(description,
-                           rid.ID_PREF_PLUGIN_ENABLED,
-                           c4d.DTYPE_BOOL,
-                           bcWorldPrefs)
+        self.InitValues(DID_PREF_PLUGIN_ENABLED)
         return True
 
     def GetDDescription(self, node, description, flags):
@@ -62,7 +67,7 @@ class PreferenceDataRokoko(c4d.plugins.PreferenceData):
 
         # If default values are requested, reinitialize
         if flags & c4d.DESCFLAGS_DESC_NEEDDEFAULTVALUE:
-            self.Init(node, description)
+            self.InitValues(DID_PREF_PLUGIN_ENABLED, description)
 
         # For optimization purposes C4D doesn't always relayout the entire
         # Description.
@@ -76,7 +81,7 @@ class PreferenceDataRokoko(c4d.plugins.PreferenceData):
                 node, description, singleId, rid.ID_PREF_PLUGIN_ENABLED,
                 ("Enable Rokoko Studio Live Plugin "
                  "(change needs C4D restart to take effect)"),
-                ROKOKOPREFERENCES_MAIN_GROUP, anim=False, valDefault=True):
+                c4d.ROKOKOPREFERENCES_MAIN_GROUP, anim=False, valDefault=True):
             return False
         return True, flags | c4d.DESCFLAGS_DESC_LOADED
 

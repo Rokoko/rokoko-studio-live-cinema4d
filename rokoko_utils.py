@@ -214,6 +214,9 @@ def GetWorldPrefs():
         bcWorldPrefs = GetDefaultPrefContainer()
         c4d.plugins.SetWorldPluginData(
             rid.PLUGIN_ID_COMMAND_MANAGER, bcWorldPrefs, True)
+        # Rather safe than sorry, so we work with the correct instance
+        bcWorldPrefs = c4d.plugins.GetWorldPluginData(
+            rid.PLUGIN_ID_COMMAND_MANAGER)
     return bcWorldPrefs
 
 
@@ -288,9 +291,9 @@ def InitBaseContainer():
     enabled = GetPref(rid.ID_DLGMNGR_GROUP_COMMAND_API)
     if enabled is None:
         SetPref(rid.ID_DLGMNGR_GROUP_COMMAND_API, False)
-    value = GetPref(rid.ID_DLGSAVE_CREATE_IN_TAKE)
+    value = GetPref(rid.ID_DLGSAVE_TARGET_TAKE)
     if value is None:
-        SetPref(rid.ID_DLGSAVE_CREATE_IN_TAKE, True)
+        SetPref(rid.ID_DLGSAVE_TARGET_TAKE, 0)
     value = GetPref(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE)
     if value is None:
         SetPref(rid.ID_DLGSAVE_ACTIVATE_NEW_TAKE, False)
